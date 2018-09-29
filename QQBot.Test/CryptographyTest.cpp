@@ -1,35 +1,40 @@
 ﻿#include "pch.h"
 #include <catch.hpp>
 
-template <typename T, typename U, bool = std::is_const_v<T>>
-struct MayAddConst
-{
-	using Type = std::add_const_t<U>;
-};
-
-template <typename T, typename U>
-struct MayAddConst<T, U, false>
-{
-	using Type = U;
-};
-
-template <typename T, std::size_t N>
-typename MayAddConst<T, std::byte>::Type (&ToBytes(T (&arr)[N]))[sizeof(T) * N / sizeof(std::byte)]
-{
-	return reinterpret_cast<typename MayAddConst<T, std::byte>::Type(&)[sizeof(T) * N / sizeof(std::byte)]>(arr);
-}
+using namespace QQBot;
 
 TEST_CASE("Cryptography", "[Utility][Cryptography]")
 {
-	constexpr const char text[] = "123456789123456789";
-	constexpr const char key[] = "00000000000000000000000000000000";
+	using namespace Cryptography;
 
-	char result[QQBot::Cryptography::Tea::CalculateOutputSize(std::size(text))]{};
-	const auto resultSize = QQBot::Cryptography::Tea::Encrypt(ToBytes(text), ToBytes(result), ToBytes(key));
-	char decryptResult[std::size(result)]{};
-	const auto decryptResultSize = QQBot::Cryptography::Tea::Decrypt(ToBytes(result), ToBytes(decryptResult), ToBytes(key));
+	SECTION("Tea")
+	{
+		using namespace Tea;
 
-	REQUIRE(resultSize == QQBot::Cryptography::Tea::CalculateOutputSize(std::size(text)));
-	REQUIRE(decryptResultSize == std::size(text));
-	REQUIRE(std::memcmp(decryptResult, text, std::size(text)) == 0);
+		constexpr const char text[] = "123456789123456789";
+		constexpr const char key[] = "00000000000000000000000000000000";
+
+		char result[CalculateOutputSize(std::size(text))]{};
+		const auto formattedKey = FormatKey(Utility::ToByteSpan(key));
+		const auto resultSize = Encrypt(Utility::ToByteSpan(text), Utility::ToByteSpan(result), formattedKey);
+		char decryptResult[std::size(result)]{};
+		const auto decryptResultSize = Decrypt(Utility::ToByteSpan(result), Utility::ToByteSpan(decryptResult), formattedKey);
+
+		REQUIRE(resultSize == Cryptography::Tea::CalculateOutputSize(std::size(text)));
+		REQUIRE(decryptResultSize == std::size(text));
+		REQUIRE(std::memcmp(decryptResult, text, std::size(text)) == 0);
+	}
+
+	SECTION("Md5")
+	{
+		using namespace Md5;
+
+		constexpr const char test[] = "test";
+
+		std::byte result[16];
+		Calculate(Utility::ToByteSpan(test).subspan(0, 4), result);
+
+		constexpr const nByte expectedResult[] = "\x09\x8f\x6b\xcd\x46\x21\xd3\x73\xca\xde\x4e\x83\x26\x27\xb4\xf6";
+		REQUIRE(std::memcmp(result, expectedResult, std::size(result)) == 0);
+	}
 }

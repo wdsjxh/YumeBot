@@ -1,7 +1,7 @@
 ﻿#include "Cryptography.h"
 #include <random>
 #include "Utility.h"
-#include "natLinq.h"
+#include <openssl/md5.h>
 
 #undef min
 #undef max
@@ -11,18 +11,6 @@ using namespace QQBot::Cryptography;
 
 namespace
 {
-	std::array<std::uint32_t, 4> FormatKey(gsl::span<const std::byte> const& key)
-	{
-		if (key.empty())
-		{
-			nat_Throw(CryptoException, u8"key is empty."_nv);
-		}
-
-		std::array<std::uint32_t, 4> result{ 0x20202020, 0x20202020, 0x20202020, 0x20202020 };
-		std::memcpy(result.data(), key.data(), std::min<std::size_t>(key.size(), 16));
-		return result;
-	}
-
 	constexpr std::uint32_t TeaDelta = 0x9E3779B9;
 	constexpr std::size_t TeaIterationTimes = 16;
 	constexpr std::uint32_t TeaDecryptInitSum = TeaDelta << 4;
@@ -62,8 +50,20 @@ namespace
 	}
 }
 
+std::array<std::uint32_t, 4> Tea::FormatKey(gsl::span<const std::byte> const& key)
+{
+	if (key.empty())
+	{
+		nat_Throw(CryptoException, u8"key is empty."_nv);
+	}
+
+	std::array<std::uint32_t, 4> result{ 0x20202020, 0x20202020, 0x20202020, 0x20202020 };
+	std::memcpy(result.data(), key.data(), std::min<std::size_t>(key.size(), 16));
+	return result;
+}
+
 ///	@see https://baike.baidu.com/item/TEA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95
-std::size_t Tea::Encrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output, gsl::span<const std::byte> const& key)
+std::size_t Tea::Encrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output, gsl::span<const std::uint32_t, 4> const& key)
 {
 	const auto totalProcessSize = CalculateOutputSize(input.size());
 	assert(totalProcessSize % TeaProcessUnitSize == 0);
@@ -74,7 +74,6 @@ std::size_t Tea::Encrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 	const auto paddingSize = totalProcessSize - input.size();
 	const auto frontPaddingSize = paddingSize - 7;
 
-	const auto formattedKey = FormatKey(key);
 	std::random_device randomDevice;
 	std::default_random_engine randomEngine{ randomDevice() };
 	const std::uniform_int_distribution<nuInt> dist{ 0x00, 0xFF };
@@ -128,22 +127,20 @@ std::size_t Tea::Encrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 			}
 		}
 
-		::Encrypt(inputBuffer, outputBuffer, formattedKey);
+		::Encrypt(inputBuffer, outputBuffer, key);
 		std::memcpy(&output[processedLength], outputBuffer, TeaProcessUnitSize);
 	}
 
 	return totalProcessSize;
 }
 
-std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output, gsl::span<const std::byte> const& key)
+std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output, gsl::span<const std::uint32_t, 4> const& key)
 {
 	const auto inputSize = static_cast<std::size_t>(input.size());
 	if (inputSize % TeaProcessUnitSize != 0 || inputSize < 16)
 	{
 		nat_Throw(CryptoException, u8"Invalid input data."_nv);
 	}
-
-	const auto formattedKey = FormatKey(key);
 
 	std::uint32_t inputBuffer[2];
 	std::uint32_t outputBuffer[2];
@@ -156,7 +153,7 @@ std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 	{
 		std::memcpy(inputBuffer, &input[processedLength], TeaProcessUnitSize);
 
-		::Decrypt(inputBuffer, outputBuffer, formattedKey);
+		::Decrypt(inputBuffer, outputBuffer, key);
 
 		if (processedLength > 0)
 		{
@@ -211,4 +208,9 @@ std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 	}
 
 	return inputSize - frontPaddingSize - 7;
+}
+
+void Md5::Calculate(gsl::span<const std::byte> const& input, gsl::span<std::byte, 16> const& output)
+{
+	MD5(reinterpret_cast<const unsigned char*>(input.data()), input.size(), reinterpret_cast<unsigned char*>(output.data()));
 }

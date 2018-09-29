@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cryptography.h" />
+    <ClInclude Include="Jce.h" />
     <ClInclude Include="QQBot.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
@@ -108,7 +109,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>NatsuLib.lib;libcrypto64MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NatsuLib.lib;legacy_stdio_definitions.lib;libcrypto64MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\NatsuLib\NatsuLib\bin\$(Platform)\$(Configuration);D:\OpenSSL-Win64\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -131,7 +132,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>NatsuLib.lib;libcrypto64MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NatsuLib.lib;legacy_stdio_definitions.lib;libcrypto64MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\NatsuLib\NatsuLib\bin\$(Platform)\$(Configuration);D:\OpenSSL-Win64\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -158,7 +159,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>NatsuLib.lib;libcrypto64MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NatsuLib.lib;legacy_stdio_definitions.lib;libcrypto64MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\NatsuLib\NatsuLib\bin\$(Platform)\$(Configuration);D:\OpenSSL-Win64\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -185,7 +186,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>NatsuLib.lib;libcrypto64MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NatsuLib.lib;legacy_stdio_definitions.lib;libcrypto64MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\NatsuLib\NatsuLib\bin\$(Platform)\$(Configuration);D:\OpenSSL-Win64\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
