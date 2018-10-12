@@ -267,7 +267,7 @@ namespace YumeBot::Jce
 
 #define FIELD(name, tag, type, ...) \
 	{\
-		using FieldType = Utility::RemoveCvRef<decltype(ret->Get##name())>;\
+		using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
 		stream.Read<JceStruct::TypeEnum::type>(tag, ret->Get##name(),\
 			Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, std::nullptr_t>::template Result, std::negation>::template Result, std::nullptr_t>(__VA_ARGS__));\
 	}

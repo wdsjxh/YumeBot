@@ -157,4 +157,16 @@ namespace YumeBot::Utility
 
 	template <typename T>
 	using RemoveCvRef = std::remove_cv_t<std::remove_reference_t<T>>;
+
+	template <typename T, template <typename> class Template>
+	struct MayRemoveTemplate
+		: ResultType<T>
+	{
+	};
+
+	template <typename T, template <typename> class Template>
+	struct MayRemoveTemplate<Template<T>, Template>
+		: ResultType<T>
+	{
+	};
 }
