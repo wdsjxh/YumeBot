@@ -15,30 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="QQBot.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Cryptography.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Jce.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TlvCodeDef.h">
+    <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="QQBot.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Cryptography.cpp">
+    <ClCompile Include="CryptographyTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Jce.cpp">
+    <ClCompile Include="YumeBot.Test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

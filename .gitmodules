@@ -1,0 +1,6 @@
+[submodule "Extern/asio"]
+	path = Extern/asio
+	url = https://github.com/chriskohlhoff/asio.git
+[submodule "Extern/NatsuLib"]
+	path = Extern/NatsuLib
+	url = https://github.com/akemimadoka/NatsuLib.git

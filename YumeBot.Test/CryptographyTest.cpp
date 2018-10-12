@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include <catch.hpp>
 
-using namespace QQBot;
+using namespace YumeBot;
 
 TEST_CASE("Cryptography", "[Utility][Cryptography]")
 {

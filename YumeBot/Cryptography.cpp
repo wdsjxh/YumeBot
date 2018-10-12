@@ -7,7 +7,7 @@
 #undef max
 
 using namespace NatsuLib;
-using namespace QQBot::Cryptography;
+using namespace YumeBot::Cryptography;
 
 namespace
 {

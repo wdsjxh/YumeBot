@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QQBot", "QQBot\QQBot.vcxproj", "{EC6FB333-F85F-4AD3-8792-33E1C62734BA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YumeBot", "YumeBot\YumeBot.vcxproj", "{EC6FB333-F85F-4AD3-8792-33E1C62734BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extern", "Extern", "{E5E98F7D-B53A-44CB-8945-91A1419297A4}"
 EndProject
@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NatsuLib", "Extern\NatsuLib
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "Extern\NatsuLib\NatsuLib\extern\zlib\zlib.vcxproj", "{0BFBD1A8-5638-4B35-BA03-8DB47F921B9B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QQBot.Test", "QQBot.Test\QQBot.Test.vcxproj", "{81338DEA-3569-459E-9D73-609BC779B598}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YumeBot.Test", "YumeBot.Test\YumeBot.Test.vcxproj", "{81338DEA-3569-459E-9D73-609BC779B598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

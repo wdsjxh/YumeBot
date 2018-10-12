@@ -3,7 +3,7 @@
 #include <gsl/span>
 #include <type_traits>
 
-namespace QQBot::Utility
+namespace YumeBot::Utility
 {
 	constexpr std::size_t AlignTo(std::size_t num, std::size_t alignment) noexcept
 	{

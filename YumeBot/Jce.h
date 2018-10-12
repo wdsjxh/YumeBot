@@ -3,7 +3,7 @@
 #include <optional>
 #include "Utility.h"
 
-namespace QQBot::Jce
+namespace YumeBot::Jce
 {
 	DeclareException(InvalidData, NatsuLib::natException, u8"Invalid data");
 

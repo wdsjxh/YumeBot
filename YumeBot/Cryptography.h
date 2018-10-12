@@ -6,9 +6,9 @@
 
 #include "Utility.h"
 
-namespace QQBot::Cryptography
+namespace YumeBot::Cryptography
 {
-	DeclareException(CryptoException, NatsuLib::natException, u8"QQBot::Cryptography::CryptoException");
+	DeclareException(CryptoException, NatsuLib::natException, u8"YumeBot::Cryptography::CryptoException");
 
 	namespace Tea
 	{

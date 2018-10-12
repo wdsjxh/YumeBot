@@ -7,7 +7,7 @@
 #define _SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING 1
 #include <asio.hpp>
 
-namespace QQBot
+namespace YumeBot
 {
 	class Bot
 		: public NatsuLib::natRefObjImpl<Bot>

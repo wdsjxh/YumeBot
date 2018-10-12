@@ -1,7 +1,7 @@
 ﻿#include "Jce.h"
 
 using namespace NatsuLib;
-using namespace QQBot;
+using namespace YumeBot;
 using namespace Jce;
 
 JceStruct::~JceStruct()
