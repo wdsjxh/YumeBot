@@ -5,7 +5,9 @@
 
 namespace YumeBot::Jce
 {
-	DeclareException(InvalidData, NatsuLib::natException, u8"Invalid data");
+	DeclareException(JceException, NatsuLib::natException, u8"YumeBot::Jce::JceException");
+	DeclareException(JceDecodeException, JceException, u8"YumeBot::Jce::JceDecodeException");
+	DeclareException(JceEncodeException, JceException, u8"YumeBot::Jce::JceEncodeException");
 
 	class JceStruct
 		: public NatsuLib::natRefObj
@@ -38,8 +40,8 @@ namespace YumeBot::Jce
 
 		~JceStruct();
 
-	private:
-
+		virtual std::string_view GetJceStructName() const noexcept = 0;
+		virtual TypeEnum GetJceStructType() const noexcept = 0;
 	};
 
 	template <typename T>
@@ -82,7 +84,7 @@ namespace YumeBot::Jce
 #define FIELD_TYPE_BUILDER_OP(name, code, type) \
 	template <typename... Attributes>\
 	struct FieldTypeBuilder<JceStruct::TypeEnum::name, std::tuple<Attributes...>>\
-		: Utility::ResultType<decltype(Utility::RecursiveApply<type, Attributes...>())>\
+		: decltype(Utility::RecursiveApply<type, Attributes...>())\
 	{\
 	};
 
@@ -159,7 +161,7 @@ namespace YumeBot::Jce
 				const auto head = self.ReadHead();
 				if (static_cast<JceStruct::TypeEnum>(head.Type) != Type)
 				{
-					nat_Throw(InvalidData);
+					nat_Throw(JceDecodeException, u8"Type mismatch.");
 				}
 
 				self.m_Reader->ReadPod(value);
@@ -218,9 +220,9 @@ namespace YumeBot::Jce
 
 #define TEMPLATE_ARGUMENT(...) TemplateArgs<__VA_ARGS__>
 
-#define FIELD(name, tag, type, attribute) \
+#define FIELD(name, tag, type, ...) \
 	public:\
-		typename FieldTypeBuilder<JceStruct::TypeEnum::type, std::tuple<attribute>>::Type::Type m_##name;\
+		typename FieldTypeBuilder<JceStruct::TypeEnum::type, std::tuple<__VA_ARGS__>>::Type m_##name;\
 		\
 	public:\
 		const auto& Get##name() const noexcept\
@@ -248,6 +250,12 @@ namespace YumeBot::Jce
 	class name\
 		: public NatsuLib::natRefObjImpl<name, JceStruct>\
 	{\
+	public:\
+		~name();\
+		\
+		std::string_view GetJceStructName() const noexcept override;\
+		TypeEnum GetJceStructType() const noexcept override;\
+		\
 		__VA_ARGS__\
 	};
 
@@ -257,8 +265,12 @@ namespace YumeBot::Jce
 
 #define IS_OPTIONAL(defaultValue) defaultValue
 
-#define FIELD(name, tag, type, attribute) stream.Read<JceStruct::TypeEnum::type>(tag, ret->Get##name(),\
-	Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, std::nullptr_t>::template Result, std::negation>::template Result, std::nullptr_t>(attribute));
+#define FIELD(name, tag, type, ...) \
+	{\
+		using FieldType = Utility::RemoveCvRef<decltype(ret->Get##name())>;\
+		stream.Read<JceStruct::TypeEnum::type>(tag, ret->Get##name(),\
+			Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, std::nullptr_t>::template Result, std::negation>::template Result, std::nullptr_t>(__VA_ARGS__));\
+	}
 
 #define TLV_CODE(name, code, ...) \
 	template <>\
@@ -274,7 +286,7 @@ namespace YumeBot::Jce
 
 #include "TlvCodeDef.h"
 
-#define FIELD(name, tag, type, attribute) stream->Write<JceStruct::TypeEnum::type>(tag, value->Get##name());
+#define FIELD(name, tag, type, ...) stream->Write<JceStruct::TypeEnum::type>(tag, value->Get##name());
 
 #define TLV_CODE(name, code, ...) \
 	template <>\

@@ -2,10 +2,6 @@
 #define TLV_CODE(name, code, ...)
 #endif
 
-#ifndef ATTRIBUTE_SET
-#define ATTRIBUTE_SET(...) __VA_ARGS__
-#endif
-
 #ifndef NO_OP
 #define NO_OP
 #endif
@@ -19,62 +15,62 @@
 #endif
 
 #ifndef FIELD
-#define FIELD(name, tag, type, attribute)
+#define FIELD(name, tag, type, ...)
 #endif
 
 #ifndef BYTE
-#define BYTE(name, tag, attribute) FIELD(name, tag, Byte, attribute)
+#define BYTE(name, tag, ...) FIELD(name, tag, Byte, __VA_ARGS__)
 #endif
 
 #ifndef SHORT
-#define SHORT(name, tag, attribute) FIELD(name, tag, Short, attribute)
+#define SHORT(name, tag, ...) FIELD(name, tag, Short, __VA_ARGS__)
 #endif
 
 #ifndef INT
-#define INT(name, tag, attribute) FIELD(name, tag, Int, attribute)
+#define INT(name, tag, ...) FIELD(name, tag, Int, __VA_ARGS__)
 #endif
 
 #ifndef LONG
-#define LONG(name, tag, attribute) FIELD(name, tag, Long, attribute)
+#define LONG(name, tag, ...) FIELD(name, tag, Long, __VA_ARGS__)
 #endif
 
 #ifndef FLOAT
-#define FLOAT(name, tag, attribute) FIELD(name, tag, Float, attribute)
+#define FLOAT(name, tag, ...) FIELD(name, tag, Float, __VA_ARGS__)
 #endif
 
 #ifndef DOUBLE
-#define DOUBLE(name, tag, attribute) FIELD(name, tag, Double, attribute)
+#define DOUBLE(name, tag, ...) FIELD(name, tag, Double, __VA_ARGS__)
 #endif
 
 #ifndef STRING1
-#define STRING1(name, tag, attribute) FIELD(name, tag, String1, attribute)
+#define STRING1(name, tag, ...) FIELD(name, tag, String1, __VA_ARGS__)
 #endif
 
 #ifndef STRING4
-#define STRING4(name, tag, attribute) FIELD(name, tag, String4, attribute)
+#define STRING4(name, tag, ...) FIELD(name, tag, String4, __VA_ARGS__)
 #endif
 
 #ifndef MAP
-#define MAP(name, tag, attribute) FIELD(name, tag, Map, attribute)
+#define MAP(name, tag, ...) FIELD(name, tag, Map, __VA_ARGS__)
 #endif
 
 #ifndef LIST
-#define LIST(name, tag, attribute) FIELD(name, tag, List, attribute)
+#define LIST(name, tag, ...) FIELD(name, tag, List, __VA_ARGS__)
 #endif
 
 #ifndef STRUCT
-#define STRUCT(name, tag, attribute) FIELD(name, tag, StructBegin, attribute)
+#define STRUCT(name, tag, ...) FIELD(name, tag, StructBegin, __VA_ARGS__)
 #endif
 
 #ifndef ZERO_TAG
-#define ZERO_TAG(name, tag, attribute) FIELD(name, tag, ZeroTag, attribute)
+#define ZERO_TAG(name, tag, ...) FIELD(name, tag, ZeroTag, __VA_ARGS__)
 #endif
 
 #ifndef SIMPLE_LIST
-#define SIMPLE_LIST(name, tag, attribute) FIELD(name, tag, SimpleList, attribute)
+#define SIMPLE_LIST(name, tag, ...) FIELD(name, tag, SimpleList, __VA_ARGS__)
 #endif
 
-TLV_CODE(TlvTest, 0, INT(TestInt, 0, ATTRIBUTE_SET()), FLOAT(TestFloat, 1, ATTRIBUTE_SET(IS_OPTIONAL(1.0f))))
+TLV_CODE(TlvTest, 0, INT(TestInt, 0), FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f)), MAP(TestMap, 2, TEMPLATE_ARGUMENT(int, float)))
 
 #undef SIMPLE_LIST
 #undef ZERO_TAG

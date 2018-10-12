@@ -154,4 +154,7 @@ namespace YumeBot::Utility
 		template <typename... Args>
 		using Result = Template2<Template1<Args...>>;
 	};
+
+	template <typename T>
+	using RemoveCvRef = std::remove_cv_t<std::remove_reference_t<T>>;
 }

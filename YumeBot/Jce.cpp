@@ -25,3 +25,20 @@ JceOutputStream::JceOutputStream(natRefPointer<natBinaryWriter> writer)
 JceOutputStream::~JceOutputStream()
 {
 }
+
+#define TLV_CODE(name, code, ...) \
+	name::~name()\
+	{\
+	}\
+	\
+	std::string_view name::GetJceStructName() const noexcept\
+	{\
+		return #name;\
+	}\
+	\
+	TypeEnum name::GetJceStructType() const noexcept\
+	{\
+		return TypeEnum::name;\
+	}
+
+#include "TlvCodeDef.h"
