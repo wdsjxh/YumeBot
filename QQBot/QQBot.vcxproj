@@ -22,10 +22,12 @@
     <ClInclude Include="Cryptography.h" />
     <ClInclude Include="Jce.h" />
     <ClInclude Include="QQBot.h" />
+    <ClInclude Include="TlvCodeDef.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cryptography.cpp" />
+    <ClCompile Include="Jce.cpp" />
     <ClCompile Include="QQBot.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

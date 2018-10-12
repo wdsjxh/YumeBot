@@ -16,6 +16,10 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 
 		char result[CalculateOutputSize(std::size(text))]{};
 		const auto formattedKey = FormatKey(Utility::ToByteSpan(key));
+
+		// 0x30303030 == { '0', '0', '0', '0' }
+		REQUIRE(std::all_of(std::cbegin(formattedKey), std::cend(formattedKey), [](std::uint32_t value) constexpr { return value == 0x30303030; }));
+
 		const auto resultSize = Encrypt(Utility::ToByteSpan(text), Utility::ToByteSpan(result), formattedKey);
 		char decryptResult[std::size(result)]{};
 		const auto decryptResultSize = Decrypt(Utility::ToByteSpan(result), Utility::ToByteSpan(decryptResult), formattedKey);

@@ -27,12 +27,18 @@
     <ClInclude Include="Jce.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TlvCodeDef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QQBot.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Cryptography.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Jce.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
