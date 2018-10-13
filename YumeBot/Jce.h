@@ -654,7 +654,7 @@ namespace YumeBot::Jce
 						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
 					}
 
-					TlvDeserializer<T>::Deserialize(self);
+					value = TlvDeserializer<T>::Deserialize(self);
 
 					self.SkipToStructEnd();
 
