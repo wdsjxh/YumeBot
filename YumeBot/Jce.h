@@ -9,6 +9,9 @@ namespace YumeBot::Jce
 	DeclareException(JceDecodeException, JceException, u8"YumeBot::Jce::JceDecodeException");
 	DeclareException(JceEncodeException, JceException, u8"YumeBot::Jce::JceEncodeException");
 
+	enum class JceCode;
+
+	// Jce 中 Byte 是有符号的，此处表示为无符号，使用时需注意
 	class JceStruct
 		: public NatsuLib::natRefObj
 	{
@@ -41,7 +44,7 @@ namespace YumeBot::Jce
 		~JceStruct();
 
 		virtual std::string_view GetJceStructName() const noexcept = 0;
-		virtual TypeEnum GetJceStructType() const noexcept = 0;
+		virtual JceCode GetJceStructType() const noexcept = 0;
 	};
 
 	template <typename T>
@@ -63,7 +66,7 @@ namespace YumeBot::Jce
 	{
 		template <typename T>
 		struct Apply
-			: Utility::ResultType<std::optional<T>>
+			: Utility::ResultType<std::conditional_t<Utility::IsTemplateOf<T, NatsuLib::natRefPointer>::value, T, std::optional<T>>>
 		{
 		};
 	};
@@ -92,16 +95,25 @@ namespace YumeBot::Jce
 
 #undef FIELD_TYPE_BUILDER_OP
 
+	namespace Detail
+	{
+		struct NoneType
+		{
+		};
+
+		constexpr NoneType None{};
+	}
+
+	struct HeadData
+	{
+		std::uint32_t Tag;
+		JceStruct::TypeEnum Type;
+	};
+
 	class JceInputStream
 		: NatsuLib::noncopyable
 	{
 	public:
-		struct HeadData
-		{
-			std::uint32_t Tag;
-			JceStruct::TypeEnum Type;
-		};
-
 		explicit JceInputStream(NatsuLib::natRefPointer<NatsuLib::natBinaryReader> reader);
 		~JceInputStream();
 
@@ -259,13 +271,13 @@ namespace YumeBot::Jce
 		}
 
 		template <typename T>
-		bool Read(std::size_t tag, T& value, std::nullptr_t = nullptr)
+		bool Read(std::uint32_t tag, T& value, Detail::NoneType = Detail::None)
 		{
 			return Reader<T>::DoRead(*this, tag, value);
 		}
 
 		template <typename T, typename U>
-		std::enable_if_t<std::is_assignable_v<T&, U&&>, std::true_type> Read(std::size_t tag, T& value, U&& defaultValue)
+		std::enable_if_t<std::is_assignable_v<T&, U&&>, std::true_type> Read(std::uint32_t tag, T& value, U&& defaultValue)
 		{
 			bool readSucceed;
 			if constexpr (Utility::IsTemplateOf<T, std::optional>::value)
@@ -295,7 +307,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<std::uint8_t>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::uint8_t& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::uint8_t& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -322,7 +334,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<std::int16_t>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::int16_t& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int16_t& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -330,7 +342,7 @@ namespace YumeBot::Jce
 					switch (head.Type)
 					{
 					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::uint8_t>();
+						value = self.m_Reader->ReadPod<std::int8_t>();
 						break;
 					case JceStruct::TypeEnum::Short:
 						self.m_Reader->ReadPod(value);
@@ -352,7 +364,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<std::int32_t>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::int32_t& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int32_t& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -360,7 +372,7 @@ namespace YumeBot::Jce
 					switch (head.Type)
 					{
 					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::uint8_t>();
+						value = self.m_Reader->ReadPod<std::int8_t>();
 						break;
 					case JceStruct::TypeEnum::Short:
 						value = self.m_Reader->ReadPod<std::int16_t>();
@@ -385,7 +397,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<std::int64_t>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::int64_t& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int64_t& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -393,7 +405,7 @@ namespace YumeBot::Jce
 					switch (head.Type)
 					{
 					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::uint8_t>();
+						value = self.m_Reader->ReadPod<std::int8_t>();
 						break;
 					case JceStruct::TypeEnum::Short:
 						value = self.m_Reader->ReadPod<std::int16_t>();
@@ -421,7 +433,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<float>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, float& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, float& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -448,7 +460,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<double>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, double& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, double& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -478,7 +490,7 @@ namespace YumeBot::Jce
 		template <>
 		struct Reader<std::string>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::string& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::string& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -515,7 +527,7 @@ namespace YumeBot::Jce
 		template <typename Key, typename Value>
 		struct Reader<std::unordered_map<Key, Value>>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::unordered_map<Key, Value>& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::unordered_map<Key, Value>& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -569,7 +581,7 @@ namespace YumeBot::Jce
 		template <typename T>
 		struct Reader<std::vector<T>>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, std::vector<T>& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::vector<T>& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -642,9 +654,9 @@ namespace YumeBot::Jce
 		};
 
 		template <typename T>
-		struct Reader<T, std::enable_if_t<std::is_base_of_v<JceStruct, T>>>
+		struct Reader<NatsuLib::natRefPointer<T>, std::enable_if_t<std::is_base_of_v<JceStruct, T>>>
 		{
-			static bool DoRead(JceInputStream& self, std::size_t tag, T& value)
+			static bool DoRead(JceInputStream& self, std::uint32_t tag, NatsuLib::natRefPointer<T>& value)
 			{
 				if (self.SkipToTag(tag))
 				{
@@ -673,14 +685,36 @@ namespace YumeBot::Jce
 		explicit JceOutputStream(NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> writer);
 		~JceOutputStream();
 
-		template <JceStruct::TypeEnum Type, typename T>
-		void Write(std::size_t tag, T const& value)
+		NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> GetWriter() const noexcept
 		{
-			Writer<Type, T>::DoWrite(*this, tag, value);
+			return m_Writer;
 		}
 
-		template <JceStruct::TypeEnum Type, typename T>
-		void Write(std::size_t tag, std::optional<T> const& value)
+		void WriteHead(HeadData head)
+		{
+			if (head.Tag < 15)
+			{
+				m_Writer->WritePod(static_cast<std::uint8_t>((head.Tag << 4) | static_cast<std::uint8_t>(head.Type)));
+			}
+			else if (head.Tag < 256)
+			{
+				m_Writer->WritePod(static_cast<std::uint8_t>(static_cast<std::uint8_t>(head.Type) | 0xF0));
+				m_Writer->WritePod(static_cast<std::uint8_t>(head.Tag));
+			}
+			else
+			{
+				nat_Throw(JceEncodeException, u8"Tag is too big({0}).", head.Tag);
+			}
+		}
+
+		template <typename T>
+		void Write(std::uint32_t tag, T const& value)
+		{
+			Writer<T>::DoWrite(*this, tag, value);
+		}
+
+		template <typename T>
+		void Write(std::uint32_t tag, std::optional<T> const& value)
 		{
 			if (value.has_value())
 			{
@@ -688,25 +722,178 @@ namespace YumeBot::Jce
 			}
 		}
 
+		template <typename T>
+		void Write(std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
+		{
+			if (value)
+			{
+				Writer<NatsuLib::natRefPointer<T>>::DoWrite(*this, tag, value);
+			}
+		}
+
 	private:
 		NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> m_Writer;
 
-		template <JceStruct::TypeEnum Type, typename T, typename = void>
+		template <typename T, typename = void>
 		struct Writer;
 
-		template <JceStruct::TypeEnum Type, typename T>
-		struct Writer<Type, T, std::enable_if_t<std::is_pod_v<T>>>
+		template <>
+		struct Writer<std::uint8_t>
 		{
-			static void DoWrite(JceOutputStream& self, std::size_t tag, T const& value)
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::uint8_t value)
 			{
-				
+				if (!value)
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::ZeroTag });
+				}
+				else
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::Byte });
+					self.m_Writer->WritePod(value);
+				}
+			}
+		};
+
+		template <>
+		struct Writer<std::int16_t>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int16_t value)
+			{
+				if (Utility::InRangeOf<std::int8_t>(value))
+				{
+					self.Write(tag, static_cast<std::uint8_t>(value));
+				}
+				else
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::Short });
+					self.m_Writer->WritePod(value);
+				}
+			}
+		};
+
+		template <>
+		struct Writer<std::int32_t>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int32_t value)
+			{
+				if (Utility::InRangeOf<std::int16_t>(value))
+				{
+					self.Write(tag, static_cast<std::int16_t>(value));
+				}
+				else
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::Int });
+					self.m_Writer->WritePod(value);
+				}
+			}
+		};
+
+		template <>
+		struct Writer<std::int64_t>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int64_t value)
+			{
+				if (Utility::InRangeOf<std::int32_t>(value))
+				{
+					self.Write(tag, static_cast<std::int32_t>(value));
+				}
+				else
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::Long });
+					self.m_Writer->WritePod(value);
+				}
+			}
+		};
+
+		template <>
+		struct Writer<float>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, float value)
+			{
+				self.WriteHead({ tag, JceStruct::TypeEnum::Float });
+				self.m_Writer->WritePod(value);
+			}
+		};
+
+		template <>
+		struct Writer<double>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, double value)
+			{
+				self.WriteHead({ tag, JceStruct::TypeEnum::Double });
+				self.m_Writer->WritePod(value);
+			}
+		};
+
+		template <>
+		struct Writer<std::string>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::string const& value)
+			{
+				const auto strSize = value.size();
+				if (strSize <= std::numeric_limits<std::uint8_t>::max())
+				{
+					self.WriteHead({ tag, JceStruct::TypeEnum::String1 });
+					self.m_Writer->WritePod(static_cast<std::uint8_t>(strSize));
+				}
+				else
+				{
+					if (strSize > std::numeric_limits<std::uint32_t>::max())
+					{
+						nat_Throw(JceDecodeException, u8"String is too long({0} bytes).", strSize);
+					}
+
+					self.WriteHead({ tag, JceStruct::TypeEnum::String4 });
+					self.m_Writer->WritePod(static_cast<std::uint32_t>(strSize));
+				}
+				self.m_Writer->GetUnderlyingStream()->WriteBytes(reinterpret_cast<ncData>(value.data()), strSize);
+			}
+		};
+
+		template <typename Key, typename Value>
+		struct Writer<std::unordered_map<Key, Value>>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::unordered_map<Key, Value> const& value)
+			{
+				self.WriteHead({ tag, JceStruct::TypeEnum::Map });
+				self.Write(0, static_cast<std::int32_t>(value.size()));
+				for (const auto& item : value)
+				{
+					self.Write(0, item.first);
+					self.Write(1, item.second);
+				}
+			}
+		};
+
+		template <typename T>
+		struct Writer<std::vector<T>>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::vector<T> const& value)
+			{
+				self.WriteHead({ tag, JceStruct::TypeEnum::List });
+				self.Write(0, static_cast<std::int32_t>(value.size()));
+				for (const auto& item : value)
+				{
+					self.Write(0, item);
+				}
+			}
+		};
+
+		template <typename T>
+		struct Writer<NatsuLib::natRefPointer<T>, std::enable_if_t<std::is_base_of_v<JceStruct, T>>>
+		{
+			static void DoWrite(JceOutputStream& self, std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
+			{
+				self.WriteHead({ tag, JceStruct::TypeEnum::StructBegin });
+				TlvSerializer<T>::Serialize(self, value);
+				self.WriteHead({ 0, JceStruct::TypeEnum::StructEnd });
 			}
 		};
 	};
 
-	enum class Code
+	enum class JceCode
 	{
-#define TLV_CODE(name, code, ...) name = code,
+#define TLV_CODE(name, code) name = code,
 #include "TlvCodeDef.h"
 	};
 
@@ -742,7 +929,7 @@ namespace YumeBot::Jce
 			return tag;\
 		}
 
-#define TLV_CODE(name, code, ...) \
+#define TLV_CODE(name, code) \
 	class name\
 		: public NatsuLib::natRefObjImpl<name, JceStruct>\
 	{\
@@ -750,14 +937,14 @@ namespace YumeBot::Jce
 		~name();\
 		\
 		std::string_view GetJceStructName() const noexcept override;\
-		TypeEnum GetJceStructType() const noexcept override;\
-		\
-		__VA_ARGS__\
+		JceCode GetJceStructType() const noexcept override;
+
+#define END_TLV_CODE(name) \
 	};
 
 #include "TlvCodeDef.h"
 
-#define NO_OP nullptr
+#define NO_OP Detail::None
 
 #define IS_OPTIONAL(defaultValue) defaultValue
 
@@ -766,35 +953,37 @@ namespace YumeBot::Jce
 	{\
 		using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
 		if (!stream.Read(tag, ret->Get##name(),\
-			Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, std::nullptr_t>::template Result, std::negation>::template Result, std::nullptr_t>(__VA_ARGS__)))\
+			Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::template Result, std::negation>::template Result, Detail::NoneType>(__VA_ARGS__)))\
 		{\
 			nat_Throw(JceDecodeException, u8"Deserializing failed : Failed to read field \"" #name "\" which is not optional.");\
 		}\
 	}
 
-#define TLV_CODE(name, code, ...) \
+#define TLV_CODE(name, code) \
 	template <>\
 	struct TlvDeserializer<name>\
 	{\
 		static NatsuLib::natRefPointer<name> Deserialize(JceInputStream& stream)\
 		{\
-			auto ret = NatsuLib::make_ref<name>();\
-			__VA_ARGS__\
+			auto ret = NatsuLib::make_ref<name>();
+
+#define END_TLV_CODE(name) \
 			return ret;\
 		}\
 	};
 
 #include "TlvCodeDef.h"
 
-#define FIELD(name, tag, type, ...) stream->Write<JceStruct::TypeEnum::type>(tag, value->Get##name());
+#define FIELD(name, tag, type, ...) stream.Write(tag, value->Get##name());
 
-#define TLV_CODE(name, code, ...) \
+#define TLV_CODE(name, code) \
 	template <>\
 	struct TlvSerializer<name>\
 	{\
 		static void Serialize(JceOutputStream& stream, NatsuLib::natRefPointer<name> const& value)\
-		{\
-			__VA_ARGS__\
+		{
+
+#define END_TLV_CODE(name) \
 		}\
 	};
 

@@ -169,4 +169,20 @@ namespace YumeBot::Utility
 		: ResultType<T>
 	{
 	};
+
+	template <typename T, typename U>
+	constexpr std::enable_if_t<std::is_integral_v<RemoveCvRef<T>> && std::is_integral_v<RemoveCvRef<U>>, bool> InRangeOf(U&& value)
+	{
+		using TType = RemoveCvRef<T>;
+		using UType = RemoveCvRef<U>;
+
+		if constexpr (sizeof(TType) >= sizeof(UType))
+		{
+			return true;
+		}
+		else
+		{
+			return value >= static_cast<UType>(std::numeric_limits<TType>::min()) && value <= static_cast<UType>(std::numeric_limits<TType>::max());
+		}
+	}
 }

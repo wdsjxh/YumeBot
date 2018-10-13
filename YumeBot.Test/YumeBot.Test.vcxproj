@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CryptographyTest.cpp" />
+    <ClCompile Include="JceTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

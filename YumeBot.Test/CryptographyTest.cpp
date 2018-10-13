@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include <catch.hpp>
+#include <Cryptography.h>
 
 using namespace YumeBot;
 

@@ -1,5 +1,9 @@
 ﻿#ifndef TLV_CODE
-#define TLV_CODE(name, code, ...)
+#define TLV_CODE(name, code)
+#endif
+
+#ifndef END_TLV_CODE
+#define END_TLV_CODE(name)
 #endif
 
 #ifndef NO_OP
@@ -70,7 +74,11 @@
 #define SIMPLE_LIST(name, tag, ...) FIELD(name, tag, SimpleList, __VA_ARGS__)
 #endif
 
-TLV_CODE(TlvTest, 0, INT(TestInt, 0), FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f)), MAP(TestMap, 2, TEMPLATE_ARGUMENT(int, float)))
+TLV_CODE(TlvTest, 0)
+	INT(TestInt, 0)
+	FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f))
+	MAP(TestMap, 2, TEMPLATE_ARGUMENT(int, float))
+END_TLV_CODE(TlvTest)
 
 #undef SIMPLE_LIST
 #undef ZERO_TAG
@@ -94,4 +102,5 @@ TLV_CODE(TlvTest, 0, INT(TestInt, 0), FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f)), MA
 #undef NO_OP
 #undef ATTRIBUTE_SET
 
+#undef END_TLV_CODE
 #undef TLV_CODE

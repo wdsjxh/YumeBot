@@ -26,7 +26,7 @@ JceOutputStream::~JceOutputStream()
 {
 }
 
-#define TLV_CODE(name, code, ...) \
+#define TLV_CODE(name, code) \
 	name::~name()\
 	{\
 	}\
@@ -36,9 +36,9 @@ JceOutputStream::~JceOutputStream()
 		return #name;\
 	}\
 	\
-	TypeEnum name::GetJceStructType() const noexcept\
+	JceCode name::GetJceStructType() const noexcept\
 	{\
-		return TypeEnum::name;\
+		return JceCode::name;\
 	}
 
 #include "TlvCodeDef.h"
