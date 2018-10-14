@@ -25,7 +25,7 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 		char decryptResult[std::size(result)]{};
 		const auto decryptResultSize = Decrypt(Utility::ToByteSpan(result), Utility::ToByteSpan(decryptResult), formattedKey);
 
-		REQUIRE(resultSize == Cryptography::Tea::CalculateOutputSize(std::size(text)));
+		REQUIRE(resultSize == CalculateOutputSize(std::size(text)));
 		REQUIRE(decryptResultSize == std::size(text));
 		REQUIRE(std::memcmp(decryptResult, text, std::size(text)) == 0);
 	}
@@ -37,7 +37,7 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 		constexpr const char test[] = "test";
 
 		std::byte result[16];
-		Calculate(Utility::ToByteSpan(test).subspan(0, 4), result);
+		Calculate(Utility::ToByteSpan(test).subspan(0, std::size(test) - 1), result);
 
 		constexpr const nByte expectedResult[] = "\x09\x8f\x6b\xcd\x46\x21\xd3\x73\xca\xde\x4e\x83\x26\x27\xb4\xf6";
 		REQUIRE(std::memcmp(result, expectedResult, std::size(result)) == 0);

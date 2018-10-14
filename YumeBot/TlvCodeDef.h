@@ -77,7 +77,7 @@
 TLV_CODE(TlvTest, 0)
 	INT(TestInt, 0)
 	FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f))
-	MAP(TestMap, 2, TEMPLATE_ARGUMENT(int, float))
+	MAP(TestMap, 2, TEMPLATE_ARGUMENT(std::int32_t, float))
 END_TLV_CODE(TlvTest)
 
 #undef SIMPLE_LIST

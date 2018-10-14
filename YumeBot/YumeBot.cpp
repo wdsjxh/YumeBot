@@ -3,7 +3,8 @@
 using namespace NatsuLib;
 using namespace YumeBot;
 
-Bot::Bot(): m_Socket(m_Service)
+Bot::Bot()
+	: m_Socket(m_Service)
 {
 }
 
