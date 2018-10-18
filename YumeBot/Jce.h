@@ -48,52 +48,10 @@ namespace YumeBot::Jce
 	};
 
 	template <typename T>
-	struct TlvDeserializer;
+	struct JceDeserializer;
 
 	template <typename T>
-	struct TlvSerializer;
-
-	struct NoOp
-	{
-		template <typename T>
-		struct Apply
-			: Utility::ResultType<T>
-		{
-		};
-	};
-
-	struct IsOptional
-	{
-		template <typename T>
-		struct Apply
-			: Utility::ResultType<std::conditional_t<Utility::IsTemplateOf<T, NatsuLib::natRefPointer>::value, T, std::optional<T>>>
-		{
-		};
-	};
-
-	template <typename... Args>
-	struct TemplateArgs
-	{
-		template <template <typename...> class Template>
-		struct Apply
-			: Utility::ResultType<Template<Args...>>
-		{
-		};
-	};
-
-	template <JceStruct::TypeEnum Type, typename AttributeSet>
-	struct FieldTypeBuilder;
-
-#define FIELD_TYPE_BUILDER_OP(name, code, type) \
-	template <typename... Attributes>\
-	struct FieldTypeBuilder<JceStruct::TypeEnum::name, std::tuple<Attributes...>>\
-		: decltype(Utility::RecursiveApply<type, Attributes...>())\
-	{\
-	};
-
-	JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
-
-#undef FIELD_TYPE_BUILDER_OP
+	struct JceSerializer;
 
 	namespace Detail
 	{
@@ -666,7 +624,7 @@ namespace YumeBot::Jce
 						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
 					}
 
-					value = TlvDeserializer<T>::Deserialize(self);
+					value = JceDeserializer<T>::Deserialize(self);
 
 					self.SkipToStructEnd();
 
@@ -885,7 +843,7 @@ namespace YumeBot::Jce
 			static void DoWrite(JceOutputStream& self, std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
 			{
 				self.WriteHead({ tag, JceStruct::TypeEnum::StructBegin });
-				TlvSerializer<T>::Serialize(self, value);
+				JceSerializer<T>::Serialize(self, value);
 				self.WriteHead({ 0, JceStruct::TypeEnum::StructEnd });
 			}
 		};
@@ -896,6 +854,48 @@ namespace YumeBot::Jce
 #define TLV_CODE(name, code) name = code,
 #include "TlvCodeDef.h"
 	};
+
+	struct NoOp
+	{
+		template <typename T>
+		struct Apply
+			: Utility::ResultType<T>
+		{
+		};
+	};
+
+	struct IsOptional
+	{
+		template <typename T>
+		struct Apply
+			: Utility::ResultType<std::conditional_t<Utility::IsTemplateOf<T, NatsuLib::natRefPointer>::value, T, std::optional<T>>>
+		{
+		};
+	};
+
+	template <typename... Args>
+	struct TemplateArgs
+	{
+		template <template <typename...> class Template>
+		struct Apply
+			: Utility::ResultType<Template<Args...>>
+		{
+		};
+	};
+
+	template <JceStruct::TypeEnum Type, typename AttributeSet>
+	struct FieldTypeBuilder;
+
+#define FIELD_TYPE_BUILDER_OP(name, code, type) \
+	template <typename... Attributes>\
+	struct FieldTypeBuilder<JceStruct::TypeEnum::name, std::tuple<Attributes...>>\
+		: decltype(Utility::RecursiveApply<type, Attributes...>())\
+	{\
+	};
+
+JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
+
+#undef FIELD_TYPE_BUILDER_OP
 
 #define NO_OP NoOp
 
@@ -948,12 +948,12 @@ namespace YumeBot::Jce
 
 #define IS_OPTIONAL(defaultValue) defaultValue
 
-	// 读取 optional 的时候不会返回 false
+// 读取 optional 的时候不会返回 false
 #define FIELD(name, tag, type, ...) \
 	{\
 		using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
 		if (!stream.Read(tag, ret->Get##name(),\
-			Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::template Result, std::negation>::template Result, Detail::NoneType>(__VA_ARGS__)))\
+			Utility::ReturnFirst<Utility::ConcatTrait<Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same, Detail::NoneType>::Result>::Result, std::negation>::Result, Detail::NoneType>(__VA_ARGS__)))\
 		{\
 			nat_Throw(JceDecodeException, u8"Deserializing failed : Failed to read field \"" #name "\" which is not optional.");\
 		}\
@@ -961,7 +961,7 @@ namespace YumeBot::Jce
 
 #define TLV_CODE(name, code) \
 	template <>\
-	struct TlvDeserializer<name>\
+	struct JceDeserializer<name>\
 	{\
 		static NatsuLib::natRefPointer<name> Deserialize(JceInputStream& stream)\
 		{\
@@ -978,7 +978,7 @@ namespace YumeBot::Jce
 
 #define TLV_CODE(name, code) \
 	template <>\
-	struct TlvSerializer<name>\
+	struct JceSerializer<name>\
 	{\
 		static void Serialize(JceOutputStream& stream, NatsuLib::natRefPointer<name> const& value)\
 		{
@@ -989,4 +989,7 @@ namespace YumeBot::Jce
 
 #include "TlvCodeDef.h"
 
+//static_assert(Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same, Detail::NoneType>::Result>::Result<Detail::NoneType&&>::value);
+//static_assert(Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::Result, std::negation>::Result<bool>::value);
+//static_assert(Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::Result, std::negation>::Result, Detail::NoneType>(Detail::None, false));
 }

@@ -38,5 +38,6 @@ TEST_CASE("Jce", "[Jce]")
 		CHECK(ptr->GetTestFloat() == test->GetTestFloat());
 		CHECK(ptr->GetTestInt() == test->GetTestInt());
 		CHECK(ptr->GetTestMap() == test->GetTestMap());
+		CHECK(ptr->GetTestList() == std::vector{ 1.0, 2.0, 3.0 });
 	}
 }

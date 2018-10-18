@@ -155,8 +155,12 @@ namespace YumeBot::Utility
 		using Result = Template2<Template1<Args...>>;
 	};
 
-	template <typename T>
-	using RemoveCvRef = std::remove_cv_t<std::remove_reference_t<T>>;
+	template <template <typename...> class Trait, typename... T>
+	using GetType = typename Trait<T...>::type;
+
+	// Workaround: 临时糊掉 C2210：pack expansions cannot be used as arguments to non-packed parameters in alias templates
+	template <typename... T>
+	using RemoveCvRef = std::remove_cv_t<GetType<std::remove_reference, T...>>;
 
 	template <typename T, template <typename> class Template>
 	struct MayRemoveTemplate
