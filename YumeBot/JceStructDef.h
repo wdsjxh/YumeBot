@@ -1,9 +1,9 @@
-﻿#ifndef TLV_CODE
-#define TLV_CODE(name, code)
+﻿#ifndef JCE_STRUCT
+#define JCE_STRUCT(name, code)
 #endif
 
-#ifndef END_TLV_CODE
-#define END_TLV_CODE(name)
+#ifndef END_JCE_STRUCT
+#define END_JCE_STRUCT(name)
 #endif
 
 #ifndef NO_OP
@@ -74,12 +74,12 @@
 #define SIMPLE_LIST(name, tag, ...) FIELD(name, tag, SimpleList, __VA_ARGS__)
 #endif
 
-TLV_CODE(TlvTest, 0)
+JCE_STRUCT(JceTest, 0)
 	INT(TestInt, 0)
 	FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f))
 	MAP(TestMap, 2, TEMPLATE_ARGUMENT(std::int32_t, float))
 	LIST(TestList, 3, TEMPLATE_ARGUMENT(double), IS_OPTIONAL((FieldType{ 1.0, 2.0, 3.0 })))
-END_TLV_CODE(TlvTest)
+END_JCE_STRUCT(JceTest)
 
 #undef SIMPLE_LIST
 #undef ZERO_TAG
@@ -103,5 +103,5 @@ END_TLV_CODE(TlvTest)
 #undef NO_OP
 #undef ATTRIBUTE_SET
 
-#undef END_TLV_CODE
-#undef TLV_CODE
+#undef END_JCE_STRUCT
+#undef JCE_STRUCT

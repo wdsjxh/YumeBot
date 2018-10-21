@@ -34,7 +34,7 @@ JceOutputStream::~JceOutputStream()
 {
 }
 
-#define TLV_CODE(name, code) \
+#define JCE_STRUCT(name, code) \
 	name::~name()\
 	{\
 	}\
@@ -49,4 +49,4 @@ JceOutputStream::~JceOutputStream()
 		return JceCode::name;\
 	}
 
-#include "TlvCodeDef.h"
+#include "JceStructDef.h"

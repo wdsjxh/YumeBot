@@ -851,8 +851,9 @@ namespace YumeBot::Jce
 
 	enum class JceCode
 	{
-#define TLV_CODE(name, code) name = code,
-#include "TlvCodeDef.h"
+#define JCE_STRUCT(name, code) name = code,
+#include "JceStructDef.h"
+
 	};
 
 	struct NoOp
@@ -929,7 +930,7 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 			return tag;\
 		}
 
-#define TLV_CODE(name, code) \
+#define JCE_STRUCT(name, code) \
 	class name\
 		: public NatsuLib::natRefObjImpl<name, JceStruct>\
 	{\
@@ -939,10 +940,11 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 		std::string_view GetJceStructName() const noexcept override;\
 		JceCode GetJceStructType() const noexcept override;
 
-#define END_TLV_CODE(name) \
+#define END_JCE_STRUCT(name) \
 	};
 
-#include "TlvCodeDef.h"
+#include "JceStructDef.h"
+
 
 #define NO_OP Detail::None
 
@@ -959,7 +961,7 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 		}\
 	}
 
-#define TLV_CODE(name, code) \
+#define JCE_STRUCT(name, code) \
 	template <>\
 	struct JceDeserializer<name>\
 	{\
@@ -967,27 +969,29 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 		{\
 			auto ret = NatsuLib::make_ref<name>();
 
-#define END_TLV_CODE(name) \
+#define END_JCE_STRUCT(name) \
 			return ret;\
 		}\
 	};
 
-#include "TlvCodeDef.h"
+#include "JceStructDef.h"
+
 
 #define FIELD(name, tag, type, ...) stream.Write(tag, value->Get##name());
 
-#define TLV_CODE(name, code) \
+#define JCE_STRUCT(name, code) \
 	template <>\
 	struct JceSerializer<name>\
 	{\
 		static void Serialize(JceOutputStream& stream, NatsuLib::natRefPointer<name> const& value)\
 		{
 
-#define END_TLV_CODE(name) \
+#define END_JCE_STRUCT(name) \
 		}\
 	};
 
-#include "TlvCodeDef.h"
+#include "JceStructDef.h"
+
 
 //static_assert(Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same, Detail::NoneType>::Result>::Result<Detail::NoneType&&>::value);
 //static_assert(Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::Result, std::negation>::Result<bool>::value);

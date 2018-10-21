@@ -21,8 +21,9 @@
   <ItemGroup>
     <ClInclude Include="Cryptography.h" />
     <ClInclude Include="Jce.h" />
+    <ClInclude Include="Tlv.h" />
     <ClInclude Include="YumeBot.h" />
-    <ClInclude Include="TlvCodeDef.h" />
+    <ClInclude Include="JceStructDef.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>

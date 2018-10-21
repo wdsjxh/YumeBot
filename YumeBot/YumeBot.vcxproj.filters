@@ -24,10 +24,13 @@
     <ClInclude Include="Jce.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="TlvCodeDef.h">
+    <ClInclude Include="YumeBot.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="YumeBot.h">
+    <ClInclude Include="Tlv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JceStructDef.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
