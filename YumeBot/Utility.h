@@ -10,26 +10,26 @@ namespace YumeBot::Utility
 		return num + alignment - 1 & ~(alignment - 1);
 	}
 
-	template <typename T, typename U, bool = std::is_const_v<T>>
-	struct MayAddConst
-	{
-		using Type = std::add_const_t<U>;
-	};
-
 	template <typename T, typename U>
-	struct MayAddConst<T, U, false>
+	struct MayAddConst
 	{
 		using Type = U;
 	};
 
+	template <typename T, typename U>
+	struct MayAddConst<const T, U>
+	{
+		using Type = std::add_const_t<U>;
+	};
+
 	template <typename T, std::size_t N>
-	constexpr typename MayAddConst<T, std::byte>::Type(&ToByteArray(T(&arr)[N]) noexcept)[sizeof(T) * N / sizeof(std::byte)]
+	typename MayAddConst<T, std::byte>::Type(&ToByteArray(T(&arr)[N]) noexcept)[sizeof(T) * N / sizeof(std::byte)]
 	{
 		return reinterpret_cast<typename MayAddConst<T, std::byte>::Type(&)[sizeof(T) * N / sizeof(std::byte)]>(arr);
 	}
 
 	template <typename T, std::size_t N>
-	constexpr gsl::span<typename MayAddConst<T, std::byte>::Type, sizeof(T) * N / sizeof(std::byte)> ToByteSpan(T(&arr)[N]) noexcept
+	gsl::span<typename MayAddConst<T, std::byte>::Type, sizeof(T) * N / sizeof(std::byte)> ToByteSpan(T(&arr)[N]) noexcept
 	{
 		return ToByteArray(arr);
 	}
@@ -180,7 +180,8 @@ namespace YumeBot::Utility
 		using TType = RemoveCvRef<T>;
 		using UType = RemoveCvRef<U>;
 
-		if constexpr (sizeof(TType) >= sizeof(UType))
+		// 因为有 char 所以必须 signed 和 unsigned 都测试
+		if constexpr (sizeof(TType) >= sizeof(UType) && std::is_signed_v<TType> == std::is_signed_v<UType> && std::is_unsigned_v<TType> == std::is_unsigned_v<UType>)
 		{
 			return true;
 		}

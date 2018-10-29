@@ -231,7 +231,7 @@ namespace YumeBot::Jce
 		template <typename T>
 		bool Read(std::uint32_t tag, T& value, Detail::NoneType = Detail::None)
 		{
-			return Reader<T>::DoRead(*this, tag, value);
+			return doRead(tag, value);
 		}
 
 		template <typename T, typename U>
@@ -259,381 +259,341 @@ namespace YumeBot::Jce
 	private:
 		NatsuLib::natRefPointer<NatsuLib::natBinaryReader> m_Reader;
 
-		template <typename T, typename = void>
-		struct Reader;
-
-		template <>
-		struct Reader<std::uint8_t>
+		bool doRead(std::uint32_t tag, std::uint8_t& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::uint8_t& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto [head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Byte:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Byte:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<std::int16_t>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, std::int16_t& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int16_t& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto [head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::int8_t>();
-						break;
-					case JceStruct::TypeEnum::Short:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Byte:
+					value = m_Reader->ReadPod<std::int8_t>();
+					break;
+				case JceStruct::TypeEnum::Short:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<std::int32_t>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, std::int32_t& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int32_t& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto [head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::int8_t>();
-						break;
-					case JceStruct::TypeEnum::Short:
-						value = self.m_Reader->ReadPod<std::int16_t>();
-						break;
-					case JceStruct::TypeEnum::Int:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Byte:
+					value = m_Reader->ReadPod<std::int8_t>();
+					break;
+				case JceStruct::TypeEnum::Short:
+					value = m_Reader->ReadPod<std::int16_t>();
+					break;
+				case JceStruct::TypeEnum::Int:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<std::int64_t>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, std::int64_t& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::int64_t& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto[head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Byte:
-						value = self.m_Reader->ReadPod<std::int8_t>();
-						break;
-					case JceStruct::TypeEnum::Short:
-						value = self.m_Reader->ReadPod<std::int16_t>();
-						break;
-					case JceStruct::TypeEnum::Int:
-						value = self.m_Reader->ReadPod<std::int32_t>();
-						break;
-					case JceStruct::TypeEnum::Long:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected got {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Byte:
+					value = m_Reader->ReadPod<std::int8_t>();
+					break;
+				case JceStruct::TypeEnum::Short:
+					value = m_Reader->ReadPod<std::int16_t>();
+					break;
+				case JceStruct::TypeEnum::Int:
+					value = m_Reader->ReadPod<std::int32_t>();
+					break;
+				case JceStruct::TypeEnum::Long:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected got {0}", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<float>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, float& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, float& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto[head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Float:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Float:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<double>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, double& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, double& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto[head, headSize] = self.ReadHead();
-					switch (head.Type)
-					{
-					case JceStruct::TypeEnum::Float:
-						value = self.m_Reader->ReadPod<float>();
-						break;
-					case JceStruct::TypeEnum::Double:
-						self.m_Reader->ReadPod(value);
-						break;
-					case JceStruct::TypeEnum::ZeroTag:
-						value = 0;
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					return true;
+				case JceStruct::TypeEnum::Float:
+					value = m_Reader->ReadPod<float>();
+					break;
+				case JceStruct::TypeEnum::Double:
+					m_Reader->ReadPod(value);
+					break;
+				case JceStruct::TypeEnum::ZeroTag:
+					value = 0;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
 
-		template <>
-		struct Reader<std::string>
+			return false;
+		}
+
+		bool doRead(std::uint32_t tag, std::string& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::string& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				std::size_t strSize;
+				switch (head.Type)
 				{
-					const auto [head, headSize] = self.ReadHead();
-					std::size_t strSize;
-					switch (head.Type)
+				case JceStruct::TypeEnum::String1:
+					strSize = m_Reader->ReadPod<std::uint8_t>();
+					break;
+				case JceStruct::TypeEnum::String4:
+					strSize = m_Reader->ReadPod<std::uint32_t>();
+					if (strSize > JceStruct::MaxStringLength)
 					{
-					case JceStruct::TypeEnum::String1:
-						strSize = self.m_Reader->ReadPod<std::uint8_t>();
-						break;
-					case JceStruct::TypeEnum::String4:
-						strSize = self.m_Reader->ReadPod<std::uint32_t>();
-						if (strSize > JceStruct::MaxStringLength)
-						{
-							nat_Throw(JceDecodeException, u8"String too long, {0} sizes requested.", strSize);
-						}
-						break;
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
+						nat_Throw(JceDecodeException, u8"String too long, {0} sizes requested.", strSize);
 					}
-
-					// 为了异常安全，构造临时字符串而不是就地修改
-					std::string tmpString(strSize, 0);
-					self.m_Reader->GetUnderlyingStream()->ReadBytes(reinterpret_cast<nData>(tmpString.data()), strSize);
-					value = std::move(tmpString);
-
-					return true;
+					break;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				// 为了异常安全，构造临时字符串而不是就地修改
+				std::string tmpString(strSize, 0);
+				m_Reader->GetUnderlyingStream()->ReadBytes(reinterpret_cast<nData>(tmpString.data()), strSize);
+				value = std::move(tmpString);
+
+				return true;
 			}
-		};
+
+			return false;
+		}
 
 		template <typename Key, typename Value>
-		struct Reader<std::unordered_map<Key, Value>>
+		bool doRead(std::uint32_t tag, std::unordered_map<Key, Value>& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::unordered_map<Key, Value>& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto [head, headSize] = self.ReadHead();
-					switch (head.Type)
+				case JceStruct::TypeEnum::Map:
+				{
+					std::int32_t size;
+					if (!Read(0, size))
 					{
-					case JceStruct::TypeEnum::Map:
-					{
-						std::int32_t size;
-						if (!self.Read(0, size))
-						{
-							nat_Throw(JceDecodeException, u8"Read size failed.");
-						}
-						if (size < 0)
-						{
-							nat_Throw(JceDecodeException, u8"Invalid size({0}).", size);
-						}
-
-						// 为了异常安全，构造临时 map 而不是就地修改
-						std::unordered_map<Key, Value> tmpMap;
-
-						for (std::size_t i = 0; i < static_cast<std::size_t>(size); ++i)
-						{
-							Key entryKey;
-							if (!self.Read(0, entryKey))
-							{
-								nat_Throw(JceDecodeException, u8"Read key failed.");
-							}
-							Value entryValue;
-							if (!self.Read(1, entryValue))
-							{
-								nat_Throw(JceDecodeException, u8"Read value failed.");
-							}
-							tmpMap.emplace(std::move(entryKey), std::move(entryValue));
-						}
-
-						value = std::move(tmpMap);
-						break;
+						nat_Throw(JceDecodeException, u8"Read size failed.");
 					}
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
+					if (size < 0)
+					{
+						nat_Throw(JceDecodeException, u8"Invalid size({0}).", size);
 					}
 
-					return true;
+					// 为了异常安全，构造临时 map 而不是就地修改
+					std::unordered_map<Key, Value> tmpMap;
+
+					for (std::size_t i = 0; i < static_cast<std::size_t>(size); ++i)
+					{
+						Key entryKey;
+						if (!Read(0, entryKey))
+						{
+							nat_Throw(JceDecodeException, u8"Read key failed.");
+						}
+						Value entryValue;
+						if (!Read(1, entryValue))
+						{
+							nat_Throw(JceDecodeException, u8"Read value failed.");
+						}
+						tmpMap.emplace(std::move(entryKey), std::move(entryValue));
+					}
+
+					value = std::move(tmpMap);
+					break;
+				}
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				return true;
 			}
-		};
+
+			return false;
+		}
 
 		template <typename T>
-		struct Reader<std::vector<T>>
+		bool doRead(std::uint32_t tag, std::vector<T>& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, std::vector<T>& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				switch (head.Type)
 				{
-					const auto[head, headSize] = self.ReadHead();
-					switch (head.Type)
+				case JceStruct::TypeEnum::List:
+				{
+					std::int32_t size;
+					if (!Read(0, size))
 					{
-					case JceStruct::TypeEnum::List:
+						nat_Throw(JceDecodeException, u8"Read size failed.");
+					}
+
+					// 为了异常安全，构造临时 vector 而不是就地修改
+					std::vector<T> tmpList;
+					tmpList.reserve(size);
+
+					if (size > 0)
 					{
-						std::int32_t size;
-						if (!self.Read(0, size))
+						for (std::size_t i = 0; i < static_cast<std::size_t>(size); ++i)
+						{
+							T elemValue;
+							if (!Read(0, elemValue))
+							{
+								nat_Throw(JceDecodeException, u8"Read element failed.");
+							}
+							tmpList.emplace_back(std::move(elemValue));
+						}
+					}
+
+					value = std::move(tmpList);
+
+					break;
+				}
+				case JceStruct::TypeEnum::SimpleList:
+					if constexpr (std::is_same_v<T, std::uint8_t>)
+					{
+						const auto[sizeField, sizeFieldSize] = ReadHead();
+						if (sizeField.Type != JceStruct::TypeEnum::Byte)
+						{
+							nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(sizeField.Type));
+						}
+
+						std::uint8_t size;
+						if (!Read(0, size))
 						{
 							nat_Throw(JceDecodeException, u8"Read size failed.");
 						}
 
-						// 为了异常安全，构造临时 vector 而不是就地修改
-						std::vector<T> tmpList;
-						tmpList.reserve(size);
-
-						if (size > 0)
-						{
-							for (std::size_t i = 0; i < static_cast<std::size_t>(size); ++i)
-							{
-								T elemValue;
-								if (!self.Read(0, elemValue))
-								{
-									nat_Throw(JceDecodeException, u8"Read element failed.");
-								}
-								tmpList.emplace_back(std::move(elemValue));
-							}
-						}
+						std::vector<std::uint8_t> tmpList(static_cast<std::size_t>(size));
+						m_Reader->GetUnderlyingStream()->ReadBytes(tmpList.data(), size);
 
 						value = std::move(tmpList);
 
 						break;
 					}
-					case JceStruct::TypeEnum::SimpleList:
-						if constexpr (std::is_same_v<T, std::uint8_t>)
-						{
-							const auto[sizeField, sizeFieldSize] = self.ReadHead();
-							if (sizeField.Type != JceStruct::TypeEnum::Byte)
-							{
-								nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(sizeField.Type));
-							}
-
-							std::uint8_t size;
-							if (!self.Read(0, size))
-							{
-								nat_Throw(JceDecodeException, u8"Read size failed.");
-							}
-
-							std::vector<std::uint8_t> tmpList(static_cast<std::size_t>(size));
-							self.m_Reader->GetUnderlyingStream()->ReadBytes(tmpList.data(), size);
-
-							value = std::move(tmpList);
-
-							break;
-						}
-						else
-						{
-							[[fallthrough]];
-						}
-					default:
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
+					else
+					{
+						[[fallthrough]];
 					}
-					return true;
+				default:
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
-
-				return false;
+				return true;
 			}
-		};
+
+			return false;
+		}
 
 		template <typename T>
-		struct Reader<NatsuLib::natRefPointer<T>, std::enable_if_t<std::is_base_of_v<JceStruct, T>>>
+		bool doRead(std::uint32_t tag, NatsuLib::natRefPointer<T>& value)
 		{
-			static bool DoRead(JceInputStream& self, std::uint32_t tag, NatsuLib::natRefPointer<T>& value)
+			if (SkipToTag(tag))
 			{
-				if (self.SkipToTag(tag))
+				const auto[head, headSize] = ReadHead();
+				if (head.Type != JceStruct::TypeEnum::StructBegin)
 				{
-					const auto[head, headSize] = self.ReadHead();
-					if (head.Type != JceStruct::TypeEnum::StructBegin)
-					{
-						nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}", static_cast<std::uint32_t>(head.Type));
-					}
-
-					value = JceDeserializer<T>::Deserialize(self);
-
-					self.SkipToStructEnd();
-
-					return true;
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				return false;
+				value = JceDeserializer<T>::Deserialize(*this);
+
+				SkipToStructEnd();
+
+				return true;
 			}
-		};
+
+			return false;
+		}
 	};
 
 	class JceOutputStream
@@ -668,7 +628,7 @@ namespace YumeBot::Jce
 		template <typename T>
 		void Write(std::uint32_t tag, T const& value)
 		{
-			Writer<T>::DoWrite(*this, tag, value);
+			doWrite(tag, value);
 		}
 
 		template <typename T>
@@ -685,168 +645,128 @@ namespace YumeBot::Jce
 		{
 			if (value)
 			{
-				Writer<NatsuLib::natRefPointer<T>>::DoWrite(*this, tag, value);
+				doWrite(tag, value);
 			}
 		}
 
 	private:
 		NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> m_Writer;
 
-		template <typename T, typename = void>
-		struct Writer;
-
-		template <>
-		struct Writer<std::uint8_t>
+		void doWrite(std::uint32_t tag, std::uint8_t value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::uint8_t value)
+			if (!value)
 			{
-				if (!value)
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::ZeroTag });
-				}
-				else
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::Byte });
-					self.m_Writer->WritePod(value);
-				}
+				WriteHead({ tag, JceStruct::TypeEnum::ZeroTag });
 			}
-		};
+			else
+			{
+				WriteHead({ tag, JceStruct::TypeEnum::Byte });
+				m_Writer->WritePod(value);
+			}
+		}
 
-		template <>
-		struct Writer<std::int16_t>
+		void doWrite(std::uint32_t tag, std::int16_t value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int16_t value)
+			if (Utility::InRangeOf<std::int8_t>(value))
 			{
-				if (Utility::InRangeOf<std::int8_t>(value))
-				{
-					self.Write(tag, static_cast<std::uint8_t>(value));
-				}
-				else
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::Short });
-					self.m_Writer->WritePod(value);
-				}
+				Write(tag, static_cast<std::uint8_t>(value));
 			}
-		};
+			else
+			{
+				WriteHead({ tag, JceStruct::TypeEnum::Short });
+				m_Writer->WritePod(value);
+			}
+		}
 
-		template <>
-		struct Writer<std::int32_t>
+		void doWrite(std::uint32_t tag, std::int32_t value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int32_t value)
+			if (Utility::InRangeOf<std::int16_t>(value))
 			{
-				if (Utility::InRangeOf<std::int16_t>(value))
-				{
-					self.Write(tag, static_cast<std::int16_t>(value));
-				}
-				else
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::Int });
-					self.m_Writer->WritePod(value);
-				}
+				Write(tag, static_cast<std::int16_t>(value));
 			}
-		};
+			else
+			{
+				WriteHead({ tag, JceStruct::TypeEnum::Int });
+				m_Writer->WritePod(value);
+			}
+		}
 
-		template <>
-		struct Writer<std::int64_t>
+		void doWrite(std::uint32_t tag, std::int64_t value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::int64_t value)
+			if (Utility::InRangeOf<std::int32_t>(value))
 			{
-				if (Utility::InRangeOf<std::int32_t>(value))
-				{
-					self.Write(tag, static_cast<std::int32_t>(value));
-				}
-				else
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::Long });
-					self.m_Writer->WritePod(value);
-				}
+				Write(tag, static_cast<std::int32_t>(value));
 			}
-		};
+			else
+			{
+				WriteHead({ tag, JceStruct::TypeEnum::Long });
+				m_Writer->WritePod(value);
+			}
+		}
 
-		template <>
-		struct Writer<float>
+		void doWrite(std::uint32_t tag, float value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, float value)
-			{
-				self.WriteHead({ tag, JceStruct::TypeEnum::Float });
-				self.m_Writer->WritePod(value);
-			}
-		};
+			WriteHead({ tag, JceStruct::TypeEnum::Float });
+			m_Writer->WritePod(value);
+		}
 
-		template <>
-		struct Writer<double>
+		void doWrite(std::uint32_t tag, double value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, double value)
-			{
-				self.WriteHead({ tag, JceStruct::TypeEnum::Double });
-				self.m_Writer->WritePod(value);
-			}
-		};
+			WriteHead({ tag, JceStruct::TypeEnum::Double });
+			m_Writer->WritePod(value);
+		}
 
-		template <>
-		struct Writer<std::string>
+		void doWrite(std::uint32_t tag, std::string const& value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::string const& value)
+			const auto strSize = value.size();
+			if (strSize <= std::numeric_limits<std::uint8_t>::max())
 			{
-				const auto strSize = value.size();
-				if (strSize <= std::numeric_limits<std::uint8_t>::max())
-				{
-					self.WriteHead({ tag, JceStruct::TypeEnum::String1 });
-					self.m_Writer->WritePod(static_cast<std::uint8_t>(strSize));
-				}
-				else
-				{
-					if (strSize > std::numeric_limits<std::uint32_t>::max())
-					{
-						nat_Throw(JceDecodeException, u8"String is too long({0} bytes).", strSize);
-					}
-
-					self.WriteHead({ tag, JceStruct::TypeEnum::String4 });
-					self.m_Writer->WritePod(static_cast<std::uint32_t>(strSize));
-				}
-				self.m_Writer->GetUnderlyingStream()->WriteBytes(reinterpret_cast<ncData>(value.data()), strSize);
+				WriteHead({ tag, JceStruct::TypeEnum::String1 });
+				m_Writer->WritePod(static_cast<std::uint8_t>(strSize));
 			}
-		};
+			else
+			{
+				if (strSize > std::numeric_limits<std::uint32_t>::max())
+				{
+					nat_Throw(JceDecodeException, u8"String is too long({0} bytes).", strSize);
+				}
+
+				WriteHead({ tag, JceStruct::TypeEnum::String4 });
+				m_Writer->WritePod(static_cast<std::uint32_t>(strSize));
+			}
+			m_Writer->GetUnderlyingStream()->WriteBytes(reinterpret_cast<ncData>(value.data()), strSize);
+		}
 
 		template <typename Key, typename Value>
-		struct Writer<std::unordered_map<Key, Value>>
+		void doWrite(std::uint32_t tag, std::unordered_map<Key, Value> const& value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::unordered_map<Key, Value> const& value)
+			WriteHead({ tag, JceStruct::TypeEnum::Map });
+			Write(0, static_cast<std::int32_t>(value.size()));
+			for (const auto& item : value)
 			{
-				self.WriteHead({ tag, JceStruct::TypeEnum::Map });
-				self.Write(0, static_cast<std::int32_t>(value.size()));
-				for (const auto& item : value)
-				{
-					self.Write(0, item.first);
-					self.Write(1, item.second);
-				}
+				Write(0, item.first);
+				Write(1, item.second);
 			}
-		};
+		}
 
 		template <typename T>
-		struct Writer<std::vector<T>>
+		void doWrite(std::uint32_t tag, std::vector<T> const& value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, std::vector<T> const& value)
+			WriteHead({ tag, JceStruct::TypeEnum::List });
+			Write(0, static_cast<std::int32_t>(value.size()));
+			for (const auto& item : value)
 			{
-				self.WriteHead({ tag, JceStruct::TypeEnum::List });
-				self.Write(0, static_cast<std::int32_t>(value.size()));
-				for (const auto& item : value)
-				{
-					self.Write(0, item);
-				}
+				Write(0, item);
 			}
-		};
+		}
 
 		template <typename T>
-		struct Writer<NatsuLib::natRefPointer<T>, std::enable_if_t<std::is_base_of_v<JceStruct, T>>>
+		void doWrite(std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
 		{
-			static void DoWrite(JceOutputStream& self, std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
-			{
-				self.WriteHead({ tag, JceStruct::TypeEnum::StructBegin });
-				JceSerializer<T>::Serialize(self, value);
-				self.WriteHead({ 0, JceStruct::TypeEnum::StructEnd });
-			}
-		};
+			WriteHead({ tag, JceStruct::TypeEnum::StructBegin });
+			JceSerializer<T>::Serialize(*this, value);
+			WriteHead({ 0, JceStruct::TypeEnum::StructEnd });
+		}
 	};
 
 	enum class JceCode
@@ -992,8 +912,4 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 
 #include "JceStructDef.h"
 
-
-//static_assert(Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same, Detail::NoneType>::Result>::Result<Detail::NoneType&&>::value);
-//static_assert(Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::Result, std::negation>::Result<bool>::value);
-//static_assert(Utility::ReturnFirst<Utility::ConcatTrait<Utility::BindTrait<std::is_same, Detail::NoneType>::Result, std::negation>::Result, Detail::NoneType>(Detail::None, false));
 }

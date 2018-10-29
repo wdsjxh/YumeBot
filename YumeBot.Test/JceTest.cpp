@@ -12,7 +12,7 @@ TEST_CASE("Jce", "[Jce]")
 
 	SECTION("Serialization")
 	{
-		const auto test = make_ref<TlvTest>();
+		const auto test = make_ref<JceTest>();
 		test->SetTestFloat(2.0f);
 		test->SetTestInt(233);
 		test->GetTestMap()[1] = 2.0f;
@@ -27,7 +27,7 @@ TEST_CASE("Jce", "[Jce]")
 
 		memoryStream->SetPositionFromBegin(0);
 
-		natRefPointer<TlvTest> ptr;
+		natRefPointer<JceTest> ptr;
 
 		{
 			JceInputStream inputStream{ make_ref<natBinaryReader>(memoryStream) };
