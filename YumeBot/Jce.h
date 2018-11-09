@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <natBinary.h>
 #include <optional>
+#include <string_view>
 #include "Utility.h"
 
 namespace YumeBot::Jce
@@ -9,14 +10,12 @@ namespace YumeBot::Jce
 	DeclareException(JceDecodeException, JceException, u8"YumeBot::Jce::JceDecodeException");
 	DeclareException(JceEncodeException, JceException, u8"YumeBot::Jce::JceEncodeException");
 
-	enum class JceCode;
-
 	// Jce 中 Byte 是有符号的，此处表示为无符号，使用时需注意
 	class JceStruct
 		: public NatsuLib::natRefObj
 	{
 	public:
-#define JCE_FIELD_TYPE(OP)\
+#define JCE_FIELD_TYPE(OP) \
 	OP(Byte, 0x00, std::uint8_t)\
 	OP(Short, 0x01, std::int16_t)\
 	OP(Int, 0x02, std::int32_t)\
@@ -39,12 +38,26 @@ namespace YumeBot::Jce
 #undef ENUM_OP
 		};
 
+		static constexpr nStrView GetTypeString(TypeEnum type) noexcept
+		{
+			using namespace NatsuLib::StringLiterals;
+			switch (type)
+			{
+#define STRINGIFY_OP(name, code, type) \
+			case TypeEnum::name:\
+				return u8 ## #name ## _nv;
+			JCE_FIELD_TYPE(STRINGIFY_OP)
+#undef STRINGIFY_OP
+			default:
+				return u8"UnknownType"_nv;
+			}
+		}
+
 		static constexpr std::size_t MaxStringLength = 0x06400000;
 
 		~JceStruct();
 
-		virtual std::string_view GetJceStructName() const noexcept = 0;
-		virtual JceCode GetJceStructType() const noexcept = 0;
+		virtual nStrView GetJceStructName() const noexcept = 0;
 	};
 
 	template <typename T>
@@ -769,13 +782,6 @@ namespace YumeBot::Jce
 		}
 	};
 
-	enum class JceCode
-	{
-#define JCE_STRUCT(name, code) name = code,
-#include "JceStructDef.h"
-
-	};
-
 	struct NoOp
 	{
 		template <typename T>
@@ -814,7 +820,7 @@ namespace YumeBot::Jce
 	{\
 	};
 
-JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
+	JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 
 #undef FIELD_TYPE_BUILDER_OP
 
@@ -850,15 +856,14 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 			return tag;\
 		}
 
-#define JCE_STRUCT(name, code) \
+#define JCE_STRUCT(name) \
 	class name\
 		: public NatsuLib::natRefObjImpl<name, JceStruct>\
 	{\
 	public:\
 		~name();\
 		\
-		std::string_view GetJceStructName() const noexcept override;\
-		JceCode GetJceStructType() const noexcept override;
+		nStrView GetJceStructName() const noexcept override;
 
 #define END_JCE_STRUCT(name) \
 	};
@@ -872,16 +877,17 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 
 // 读取 optional 的时候不会返回 false
 #define FIELD(name, tag, type, ...) \
-	{\
-		using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
-		if (!stream.Read(tag, ret->Get##name(),\
-			Utility::ReturnFirst<Utility::ConcatTrait<Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same, Detail::NoneType>::Result>::Result, std::negation>::Result, Detail::NoneType>(__VA_ARGS__)))\
-		{\
-			nat_Throw(JceDecodeException, u8"Deserializing failed : Failed to read field \"" #name "\" which is not optional.");\
-		}\
-	}
+			{\
+				using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
+				if (!stream.Read(tag, ret->Get##name(),\
+					Utility::ReturnFirst<Utility::ConcatTrait<Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same,\
+						Detail::NoneType>::Result>::Result, std::negation>::Result, Detail::NoneType>(__VA_ARGS__)))\
+				{\
+					nat_Throw(JceDecodeException, u8"Deserializing failed : Failed to read field \"" #name "\" which is not optional.");\
+				}\
+			}
 
-#define JCE_STRUCT(name, code) \
+#define JCE_STRUCT(name) \
 	template <>\
 	struct JceDeserializer<name>\
 	{\
@@ -899,7 +905,7 @@ JCE_FIELD_TYPE(FIELD_TYPE_BUILDER_OP)
 
 #define FIELD(name, tag, type, ...) stream.Write(tag, value->Get##name());
 
-#define JCE_STRUCT(name, code) \
+#define JCE_STRUCT(name) \
 	template <>\
 	struct JceSerializer<name>\
 	{\

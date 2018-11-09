@@ -34,19 +34,14 @@ JceOutputStream::~JceOutputStream()
 {
 }
 
-#define JCE_STRUCT(name, code) \
+#define JCE_STRUCT(name) \
 	name::~name()\
 	{\
 	}\
 	\
-	std::string_view name::GetJceStructName() const noexcept\
+	nStrView name::GetJceStructName() const noexcept\
 	{\
-		return #name;\
-	}\
-	\
-	JceCode name::GetJceStructType() const noexcept\
-	{\
-		return JceCode::name;\
+		return u8 ## #name ## _nv;\
 	}
 
 #include "JceStructDef.h"

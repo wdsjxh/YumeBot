@@ -1,5 +1,5 @@
 ﻿#ifndef JCE_STRUCT
-#define JCE_STRUCT(name, code)
+#define JCE_STRUCT(name)
 #endif
 
 #ifndef END_JCE_STRUCT
@@ -74,7 +74,7 @@
 #define SIMPLE_LIST(name, tag, ...) FIELD(name, tag, SimpleList, __VA_ARGS__)
 #endif
 
-JCE_STRUCT(JceTest, 0)
+JCE_STRUCT(JceTest)
 	INT(TestInt, 0)
 	FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f))
 	MAP(TestMap, 2, TEMPLATE_ARGUMENT(std::int32_t, float))
