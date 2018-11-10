@@ -33,6 +33,9 @@
     <ClInclude Include="JceStructDef.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Wup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cryptography.cpp">
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="YumeBot.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Wup.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

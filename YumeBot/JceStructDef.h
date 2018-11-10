@@ -1,5 +1,9 @@
 ﻿#ifndef JCE_STRUCT
-#define JCE_STRUCT(name)
+#define JCE_STRUCT(name, alias)
+#endif
+
+#ifndef JCE_STRUCT_DEFAULT_ALIAS
+#define JCE_STRUCT_DEFAULT_ALIAS(name) JCE_STRUCT(name, #name)
 #endif
 
 #ifndef END_JCE_STRUCT
@@ -74,12 +78,16 @@
 #define SIMPLE_LIST(name, tag, ...) FIELD(name, tag, SimpleList, __VA_ARGS__)
 #endif
 
-JCE_STRUCT(JceTest)
+JCE_STRUCT_DEFAULT_ALIAS(JceTest)
 	INT(TestInt, 0)
 	FLOAT(TestFloat, 1, IS_OPTIONAL(1.0f))
 	MAP(TestMap, 2, TEMPLATE_ARGUMENT(std::int32_t, float))
 	LIST(TestList, 3, TEMPLATE_ARGUMENT(double), IS_OPTIONAL((FieldType{ 1.0, 2.0, 3.0 })))
 END_JCE_STRUCT(JceTest)
+
+JCE_STRUCT(SignatureReq, "KQQConfig.SignatureReq")
+	LONG(uin, 0)
+END_JCE_STRUCT(SignatureReq)
 
 #undef SIMPLE_LIST
 #undef ZERO_TAG
@@ -104,4 +112,5 @@ END_JCE_STRUCT(JceTest)
 #undef ATTRIBUTE_SET
 
 #undef END_JCE_STRUCT
+#undef JCE_STRUCT_DEFAULT_ALIAS
 #undef JCE_STRUCT
