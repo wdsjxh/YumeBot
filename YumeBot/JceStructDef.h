@@ -14,6 +14,10 @@
 #define NO_OP
 #endif
 
+#ifndef DEFAULT_INITIALIZER
+#define DEFAULT_INITIALIZER(...) NO_OP
+#endif
+
 #ifndef IS_OPTIONAL
 #define IS_OPTIONAL(defaultValue) NO_OP
 #endif
@@ -89,6 +93,19 @@ JCE_STRUCT(SignatureReq, "KQQConfig.SignatureReq")
 	LONG(uin, 0)
 END_JCE_STRUCT(SignatureReq)
 
+JCE_STRUCT_DEFAULT_ALIAS(RequestPacket)
+	SHORT(iVersion, 1)
+	BYTE(cPacketType, 2, DEFAULT_INITIALIZER(2))
+	INT(iMessageType, 3)
+	INT(iRequestId, 4)
+	STRING1(sServantName, 5)
+	STRING1(sFuncName, 6)
+	SIMPLE_LIST(sBuffer, 7)
+	INT(iTimeout, 8)
+	MAP(context, 9, TEMPLATE_ARGUMENT(nString, nString))
+	MAP(status, 10, TEMPLATE_ARGUMENT(nString, nString))
+END_JCE_STRUCT(RequestPacket)
+
 #undef SIMPLE_LIST
 #undef ZERO_TAG
 #undef STRUCT
@@ -108,6 +125,7 @@ END_JCE_STRUCT(SignatureReq)
 
 #undef TEMPLATE_ARGUMENT
 #undef IS_OPTIONAL
+#undef DEFAULT_INITIALIZER
 #undef NO_OP
 #undef ATTRIBUTE_SET
 

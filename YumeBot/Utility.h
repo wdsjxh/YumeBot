@@ -190,4 +190,40 @@ namespace YumeBot::Utility
 			return value >= static_cast<UType>(std::numeric_limits<TType>::min()) && value <= static_cast<UType>(std::numeric_limits<TType>::max());
 		}
 	}
+
+	template <template <typename> class Trait>
+	constexpr auto Filter() noexcept
+	{
+		return std::tuple();
+	}
+
+	template <template <typename> class Trait, typename Arg, typename... Args>
+	constexpr auto Filter(Arg&& arg, Args&&... args) noexcept
+	{
+		if constexpr (Trait<Arg>::value)
+		{
+			return std::tuple_cat(std::forward_as_tuple<Arg>(arg), Filter<Trait>(std::forward<Args>(args)...));
+		}
+		else
+		{
+			return Filter<Trait>(std::forward<Args>(args)...);
+		}
+	}
+
+	namespace Detail
+	{
+		template <typename T, typename Tuple, std::size_t... Indexes>
+		constexpr void InitializeWithTuple(T& obj, Tuple&& args, std::index_sequence<Indexes...>)
+			noexcept(std::is_nothrow_constructible_v<T, std::tuple_element_t<Indexes, std::remove_reference_t<Tuple>>...>)
+		{
+			new (static_cast<void*>(std::addressof(obj))) T(std::get<Indexes>(std::forward<Tuple>(args))...);
+		}
+	}
+
+	template <typename T, typename Tuple>
+	constexpr void InitializeWithTuple(T& obj, Tuple&& args)
+		noexcept(noexcept(Detail::InitializeWithTuple(obj, std::forward<Tuple>(args), std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>())))
+	{
+		Detail::InitializeWithTuple(obj, std::forward<Tuple>(args), std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>());
+	}
 }

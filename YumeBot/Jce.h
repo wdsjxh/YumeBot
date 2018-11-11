@@ -393,12 +393,12 @@ namespace YumeBot::Jce
 		};
 	};
 
-	template <JceStruct::TypeEnum Type, typename AttributeSet>
+	template <JceStruct::TypeEnum Type, typename... Attributes>
 	struct FieldTypeBuilder;
 
 #define FIELD_TYPE_BUILDER_OP(name, code, type) \
 	template <typename... Attributes>\
-	struct FieldTypeBuilder<JceStruct::TypeEnum::name, std::tuple<Attributes...>>\
+	struct FieldTypeBuilder<JceStruct::TypeEnum::name, Attributes...>\
 		: decltype(Utility::RecursiveApply<type, Attributes...>())\
 	{\
 	};
@@ -415,7 +415,7 @@ namespace YumeBot::Jce
 
 #define FIELD(name, tag, type, ...) \
 	private:\
-		typename FieldTypeBuilder<JceStruct::TypeEnum::type, std::tuple<__VA_ARGS__>>::Type m_##name;\
+		typename FieldTypeBuilder<JceStruct::TypeEnum::type, __VA_ARGS__>::Type m_##name;\
 		\
 	public:\
 		const auto& Get##name() const noexcept\
@@ -444,6 +444,7 @@ namespace YumeBot::Jce
 		: public NatsuLib::natRefObjImpl<name, JceStruct>\
 	{\
 	public:\
+		name();\
 		~name();\
 		\
 		nStrView GetJceStructName() const noexcept override;
@@ -452,7 +453,6 @@ namespace YumeBot::Jce
 	};
 
 #include "JceStructDef.h"
-
 
 #define NO_OP Detail::None
 

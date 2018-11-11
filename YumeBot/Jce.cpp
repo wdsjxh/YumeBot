@@ -508,6 +508,39 @@ void JceOutputStream::doWrite(std::uint32_t tag, std::vector<std::uint8_t> const
 	m_Writer->GetUnderlyingStream()->WriteBytes(reinterpret_cast<ncData>(value.data()), size);
 }
 
+namespace
+{
+	template <template <typename> class Trait, typename T, typename Tuple>
+	constexpr void ReinitializeIf(T& obj, Tuple&& args)
+		noexcept((!Trait<T>::value && !std::tuple_size_v<std::remove_reference_t<Tuple>>) || (std::is_nothrow_destructible_v<T> &&
+																							  noexcept(Utility::InitializeWithTuple(obj, std::forward<Tuple>(args)))))
+	{
+		if constexpr (Trait<T>::value || std::tuple_size_v<std::remove_reference_t<Tuple>>)
+		{
+			obj.T::~T();
+			Utility::InitializeWithTuple(obj, std::forward<Tuple>(args));
+		}
+	}
+}
+
+#define JCE_STRUCT(name, alias) \
+	name::name()\
+	{
+
+#define NO_OP Detail::None
+
+#define DEFAULT_INITIALIZER(...) std::tuple(__VA_ARGS__)
+
+#define FIELD(name, tag, type, ...) \
+		::ReinitializeIf<Utility::ConcatTrait<std::is_class, std::negation>::Result>(m_##name, Utility::ReturnFirst<Utility::ConcatTrait<\
+						Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same,\
+						Detail::NoneType>::Result>::Result, std::negation>::Result, std::tuple<>>(__VA_ARGS__));
+
+#define END_JCE_STRUCT(name) \
+	}
+
+#include "JceStructDef.h"
+
 #define JCE_STRUCT(name, alias) \
 	name::~name()\
 	{\
