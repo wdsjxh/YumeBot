@@ -71,6 +71,12 @@ namespace YumeBot::Jce::Wup
 		{\
 			using namespace NatsuLib::StringLiterals;\
 			return u8 ## alias ## _nv;\
+		}\
+		\
+		constexpr nStrView GetName(NatsuLib::natRefPointer<name> const&) noexcept\
+		{\
+			using namespace NatsuLib::StringLiterals;\
+			return u8 ## alias ## _nv;\
 		}
 
 #include "JceStructDef.h"
@@ -167,5 +173,42 @@ namespace YumeBot::Jce::Wup
 
 	private:
 		std::unordered_map<nString, std::unordered_map<nString, std::vector<std::uint8_t>>> m_Data;
+	};
+
+	class UniPacket
+	{
+	public:
+		UniPacket();
+
+		void Encode(NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> const& writer);
+		void Decode(NatsuLib::natRefPointer<NatsuLib::natBinaryReader> const& reader);
+
+		UniPacket CreateResponse();
+		void CreateOldRespEncode(JceOutputStream& os);
+
+		RequestPacket& GetRequestPacket() noexcept
+		{
+			return m_RequestPacket;
+		}
+
+		OldUniAttribute& GetAttribute() noexcept
+		{
+			return m_UniAttribute;
+		}
+
+		std::int32_t GetOldRespIRet() const noexcept
+		{
+			return m_OldRespIRet;
+		}
+
+		void SetOldRespIRet(std::int32_t value) noexcept
+		{
+			m_OldRespIRet = value;
+		}
+
+	private:
+		RequestPacket m_RequestPacket;
+		OldUniAttribute m_UniAttribute;
+		std::int32_t m_OldRespIRet;
 	};
 }

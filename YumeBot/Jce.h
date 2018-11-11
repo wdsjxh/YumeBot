@@ -100,9 +100,24 @@ namespace YumeBot::Jce
 		void SkipField(JceStruct::TypeEnum type);
 		bool SkipToTag(std::uint32_t tag);
 
+		///	@brief	以指定的 tag 读取值，读取可能失败
+		///	@param	tag		指定 tag
+		///	@param	value	要写入的值
+		///	@return	读取是否成功
+		///	@remark 对于 JceStruct，若传入的引用指针为 const 限定的，则直接就地修改，否则将总是会创建新的实例并写入
+		///			这是由于新的 JceStruct 总是默认将引用指针初始化为空，而实际中未必总是需要新的实例引发的问题
+		///			若传入 JceStruct 派生的实例，也将就地修改
 		template <typename T>
 		[[nodiscard]] bool Read(std::uint32_t tag, T& value, Detail::NoneType = Detail::None)
 		{
+			const auto scope = NatsuLib::natScope([this, currentPos = m_Reader->GetUnderlyingStream()->GetPosition()]
+			{
+				if (std::uncaught_exceptions())
+				{
+					m_Reader->GetUnderlyingStream()->SetPositionFromBegin(currentPos);
+				}
+			});
+
 			return doRead(tag, value);
 		}
 
@@ -190,6 +205,8 @@ namespace YumeBot::Jce
 			return false;
 		}
 
+		bool doRead(std::uint32_t tag, gsl::span<std::uint8_t> const& value);
+
 		template <typename T>
 		bool doRead(std::uint32_t tag, std::vector<T>& value)
 		{
@@ -263,7 +280,7 @@ namespace YumeBot::Jce
 		}
 
 		template <typename T>
-		bool doRead(std::uint32_t tag, NatsuLib::natRefPointer<T>& value)
+		std::enable_if_t<std::is_base_of_v<JceStruct, T>, bool> doRead(std::uint32_t tag, NatsuLib::natRefPointer<T>& value)
 		{
 			if (SkipToTag(tag))
 			{
@@ -273,7 +290,51 @@ namespace YumeBot::Jce
 					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
 				}
 
-				value = JceDeserializer<T>::Deserialize(*this);
+				const auto newValue = NatsuLib::make_ref<T>();
+				JceDeserializer<T>::Deserialize(*this, *newValue);
+				value = newValue;
+
+				SkipToStructEnd();
+
+				return true;
+			}
+
+			return false;
+		}
+
+		template <typename T>
+		std::enable_if_t<std::is_base_of_v<JceStruct, T>, bool> doRead(std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
+		{
+			if (SkipToTag(tag))
+			{
+				const auto[head, headSize] = ReadHead();
+				if (head.Type != JceStruct::TypeEnum::StructBegin)
+				{
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
+				}
+
+				JceDeserializer<T>::Deserialize(*this, *value);
+
+				SkipToStructEnd();
+
+				return true;
+			}
+
+			return false;
+		}
+
+		template <typename T>
+		std::enable_if_t<std::is_base_of_v<JceStruct, T>, bool> doRead(std::uint32_t tag, T& value)
+		{
+			if (SkipToTag(tag))
+			{
+				const auto[head, headSize] = ReadHead();
+				if (head.Type != JceStruct::TypeEnum::StructBegin)
+				{
+					nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}.", static_cast<std::uint32_t>(head.Type));
+				}
+
+				JceDeserializer<T>::Deserialize(*this, value);
 
 				SkipToStructEnd();
 
@@ -343,6 +404,7 @@ namespace YumeBot::Jce
 			}
 		}
 
+		void doWrite(std::uint32_t tag, gsl::span<const std::uint8_t> const& value);
 		void doWrite(std::uint32_t tag, std::vector<std::uint8_t> const& value);
 
 		template <typename T>
@@ -357,11 +419,22 @@ namespace YumeBot::Jce
 		}
 
 		template <typename T>
-		void doWrite(std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
+		std::enable_if_t<std::is_base_of_v<JceStruct, T>> doWrite(std::uint32_t tag, T const& value)
 		{
 			WriteHead({ tag, JceStruct::TypeEnum::StructBegin });
 			JceSerializer<T>::Serialize(*this, value);
 			WriteHead({ 0, JceStruct::TypeEnum::StructEnd });
+		}
+
+		template <typename T>
+		std::enable_if_t<std::is_base_of_v<JceStruct, T>> doWrite(std::uint32_t tag, NatsuLib::natRefPointer<T> const& value)
+		{
+			if (!value)
+			{
+				nat_Throw(JceEncodeException, u8"value is nullptr.");
+			}
+
+			doWrite(tag, *value);
 		}
 	};
 
@@ -461,8 +534,8 @@ namespace YumeBot::Jce
 // 读取 optional 的时候不会返回 false
 #define FIELD(name, tag, type, ...) \
 			{\
-				using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(ret->Get##name())>, std::optional>::Type;\
-				if (!stream.Read(tag, ret->Get##name(),\
+				using FieldType = typename Utility::MayRemoveTemplate<Utility::RemoveCvRef<decltype(value.Get##name())>, std::optional>::Type;\
+				if (!stream.Read(tag, value.Get##name(),\
 					Utility::ReturnFirst<Utility::ConcatTrait<Utility::ConcatTrait<Utility::RemoveCvRef, Utility::BindTrait<std::is_same,\
 						Detail::NoneType>::Result>::Result, std::negation>::Result, Detail::NoneType>(__VA_ARGS__)))\
 				{\
@@ -474,25 +547,23 @@ namespace YumeBot::Jce
 	template <>\
 	struct JceDeserializer<name>\
 	{\
-		static NatsuLib::natRefPointer<name> Deserialize(JceInputStream& stream)\
-		{\
-			auto ret = NatsuLib::make_ref<name>();
+		static void Deserialize(JceInputStream& stream, name& value)\
+		{
 
 #define END_JCE_STRUCT(name) \
-			return ret;\
 		}\
 	};
 
 #include "JceStructDef.h"
 
 
-#define FIELD(name, tag, type, ...) stream.Write(tag, value->Get##name());
+#define FIELD(name, tag, type, ...) stream.Write(tag, value.Get##name());
 
 #define JCE_STRUCT(name, alias) \
 	template <>\
 	struct JceSerializer<name>\
 	{\
-		static void Serialize(JceOutputStream& stream, NatsuLib::natRefPointer<name> const& value)\
+		static void Serialize(JceOutputStream& stream, name const& value)\
 		{
 
 #define END_JCE_STRUCT(name) \

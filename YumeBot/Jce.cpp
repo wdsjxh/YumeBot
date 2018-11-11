@@ -374,6 +374,35 @@ bool JceInputStream::doRead(std::uint32_t tag, nString& value)
 	return false;
 }
 
+bool JceInputStream::doRead(std::uint32_t tag, gsl::span<std::uint8_t> const& value)
+{
+	if (SkipToTag(tag))
+	{
+		const auto[sizeField, sizeFieldSize] = ReadHead();
+		if (sizeField.Type != JceStruct::TypeEnum::Byte)
+		{
+			nat_Throw(JceDecodeException, u8"Type mismatch, got unexpected {0}."_nv, static_cast<std::uint32_t>(sizeField.Type));
+		}
+
+		std::uint8_t size;
+		if (!Read(0, size))
+		{
+			nat_Throw(JceDecodeException, u8"Read size failed."_nv);
+		}
+
+		if (static_cast<std::size_t>(value.size()) < size)
+		{
+			nat_Throw(JceDecodeException, u8"Span is not big enough."_nv);
+		}
+
+		m_Reader->GetUnderlyingStream()->ReadBytes(value.data(), size);
+
+		return true;
+	}
+
+	return false;
+}
+
 JceOutputStream::JceOutputStream(natRefPointer<natBinaryWriter> writer)
 	: m_Writer{ std::move(writer) }
 {
@@ -499,13 +528,18 @@ void JceOutputStream::doWrite(std::uint32_t tag, nString const& value)
 	doWrite(tag, value.GetView());
 }
 
-void JceOutputStream::doWrite(std::uint32_t tag, std::vector<std::uint8_t> const& value)
+void JceOutputStream::doWrite(std::uint32_t tag, gsl::span<const std::uint8_t> const& value)
 {
 	WriteHead({ tag, JceStruct::TypeEnum::SimpleList });
 	WriteHead({ 0, JceStruct::TypeEnum::Byte });
 	const auto size = value.size();
 	Write(0, static_cast<std::int32_t>(size));
 	m_Writer->GetUnderlyingStream()->WriteBytes(reinterpret_cast<ncData>(value.data()), size);
+}
+
+void JceOutputStream::doWrite(std::uint32_t tag, std::vector<std::uint8_t> const& value)
+{
+	doWrite(tag, gsl::make_span(value));
 }
 
 namespace
