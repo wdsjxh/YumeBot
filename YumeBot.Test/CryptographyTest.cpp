@@ -2,6 +2,7 @@
 #include <Cryptography.h>
 
 using namespace YumeBot;
+using namespace NatsuLib;
 
 TEST_CASE("Cryptography", "[Utility][Cryptography]")
 {
@@ -39,6 +40,11 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 		Calculate(Utility::ToByteSpan(test).subspan(0, std::size(test) - 1), result);
 
 		constexpr const std::uint8_t expectedResult[] = "\x09\x8f\x6b\xcd\x46\x21\xd3\x73\xca\xde\x4e\x83\x26\x27\xb4\xf6";
+		constexpr const auto expectedResultStr = u8"098f6bcd4621d373cade4e832627b4f6"_nv;
 		REQUIRE(std::memcmp(result, expectedResult, std::size(result)) == 0);
+		Md5ToHexString(result, [&](const char* begin, const char* end)
+		{
+			REQUIRE(nStrView{ begin, end } == expectedResultStr);
+		});
 	}
 }

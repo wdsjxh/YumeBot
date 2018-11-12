@@ -75,8 +75,7 @@ namespace YumeBot::Jce::Wup
 		\
 		constexpr nStrView GetName(NatsuLib::natRefPointer<name> const&) noexcept\
 		{\
-			using namespace NatsuLib::StringLiterals;\
-			return u8 ## alias ## _nv;\
+			return GetName(ImplicitConvertibleIdentity<NatsuLib::natRefPointer<name>>);\
 		}
 
 #include "JceStructDef.h"
@@ -138,7 +137,7 @@ namespace YumeBot::Jce::Wup
 		}
 
 		template <typename T>
-		T Get(nString const& name) const
+		bool Get(nString const& name, T& result) const
 		{
 			using namespace NatsuLib;
 
@@ -157,13 +156,7 @@ namespace YumeBot::Jce::Wup
 
 			JceInputStream in{ make_ref<natBinaryReader>(make_ref<natExternMemoryStream>(fieldIter->second.data(), fieldIter->second.size(), true)) };
 
-			T result;
-			if (!in.Read(0, result))
-			{
-				nat_Throw(natErrException, NatErr_InvalidArg, u8"Field of type {0} from key \"{1}\" is corrupted."_nv);
-			}
-
-			return result;
+			return in.Read(0, result);
 		}
 
 		bool Remove(nString const& name);

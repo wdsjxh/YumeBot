@@ -1,6 +1,6 @@
 ﻿#include "Cryptography.h"
-#include <random>
 #include "Utility.h"
+#include <random>
 #include <openssl/md5.h>
 
 #undef min

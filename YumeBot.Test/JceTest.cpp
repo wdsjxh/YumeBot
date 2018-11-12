@@ -47,11 +47,17 @@ TEST_CASE("Jce", "[Jce]")
 
 		OldUniAttribute uniAttribute{};
 
-		uniAttribute.Put(u8"SomeInt"_ns, 1);
-		CHECK(uniAttribute.Get<std::int32_t>(u8"SomeInt"_ns) == 1);
+		{
+			uniAttribute.Put(u8"SomeInt"_ns, 1);
+			std::int32_t intValue;
+			REQUIRE(uniAttribute.Get(u8"SomeInt"_ns, intValue));
+			CHECK(intValue == 1);
 
-		uniAttribute.Put(u8"SomeFloat"_ns, 1.0f);
-		CHECK(uniAttribute.Get<float>(u8"SomeFloat"_ns) == 1.0f);
+			uniAttribute.Put(u8"SomeFloat"_ns, 1.0f);
+			float floatValue;
+			REQUIRE(uniAttribute.Get(u8"SomeFloat"_ns, floatValue));
+			CHECK(floatValue == 1.0f);
+		}
 
 		const auto memoryStream = make_ref<natMemoryStream>(0, true, true, true);
 		uniAttribute.Encode(make_ref<natBinaryWriter>(memoryStream));
@@ -62,8 +68,13 @@ TEST_CASE("Jce", "[Jce]")
 			OldUniAttribute readAttribute{};
 			readAttribute.Decode(make_ref<natBinaryReader>(memoryStream));
 
-			CHECK(readAttribute.Get<std::int32_t>(u8"SomeInt"_ns) == 1);
-			CHECK(readAttribute.Get<float>(u8"SomeFloat"_ns) == 1.0f);
+			std::int32_t intValue;
+			REQUIRE(readAttribute.Get(u8"SomeInt"_ns, intValue));
+			CHECK(intValue == 1);
+
+			float floatValue;
+			REQUIRE(readAttribute.Get(u8"SomeFloat"_ns, floatValue));
+			CHECK(floatValue == 1.0f);
 		}
 	}
 
@@ -93,13 +104,16 @@ TEST_CASE("Jce", "[Jce]")
 			readPacket.Decode(make_ref<natBinaryReader>(memoryStream));
 
 			const auto& attribute = readPacket.GetAttribute();
-			CHECK(attribute.Get<std::int32_t>(u8"SomeInt"_ns) == 1);
+			std::int32_t intValue;
+			REQUIRE(attribute.Get(u8"SomeInt"_ns, intValue));
+			CHECK(intValue == 1);
 
-			const auto ptr = attribute.Get<natRefPointer<JceTest>>(u8"JceTest"_ns);
-			REQUIRE(ptr);
-			CHECK(ptr->GetTestFloat() == 2.0f);
-			CHECK(ptr->GetTestInt() == 233);
-			CHECK(ptr->GetTestMap()[1] == 2.0f);
+			natRefPointer<JceTest> ptrValue;
+			REQUIRE(attribute.Get(u8"JceTest"_ns, ptrValue));
+			REQUIRE(ptrValue);
+			CHECK(ptrValue->GetTestFloat() == 2.0f);
+			CHECK(ptrValue->GetTestInt() == 233);
+			CHECK(ptrValue->GetTestMap()[1] == 2.0f);
 
 			const auto& requestPacket = readPacket.GetRequestPacket();
 			CHECK(requestPacket.GetsFuncName() == u8"FuncName?"_nv);
