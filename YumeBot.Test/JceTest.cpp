@@ -1,5 +1,4 @@
-﻿#include "pch.h"
-#include <catch.hpp>
+﻿#include <catch.hpp>
 #include <Jce.h>
 #include <Wup.h>
 #include <natStream.h>

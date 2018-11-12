@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <natBinary.h>
 #include <optional>
-#include <string_view>
 #include "Utility.h"
 
 namespace YumeBot::Jce
