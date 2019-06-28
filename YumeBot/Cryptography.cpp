@@ -1,12 +1,13 @@
-﻿#include "Cryptography.h"
+#include "Cryptography.h"
 #include "Utility.h"
 #include <random>
 #include <openssl/md5.h>
+#include <cstring>
 
 #undef min
 #undef max
 
-using namespace NatsuLib;
+using namespace Cafe::Encoding::StringLiterals;
 using namespace YumeBot::Cryptography;
 
 namespace
@@ -54,7 +55,7 @@ std::array<std::uint32_t, 4> Tea::FormatKey(gsl::span<const std::byte> const& ke
 {
 	if (key.empty())
 	{
-		nat_Throw(CryptoException, u8"key is empty."_nv);
+		CAFE_THROW(CryptoException, u8"key is empty."_sv);
 	}
 
 	std::array<std::uint32_t, 4> result{ 0x20202020, 0x20202020, 0x20202020, 0x20202020 };
@@ -69,14 +70,14 @@ std::size_t Tea::Encrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 	assert(totalProcessSize % TeaProcessUnitSize == 0);
 	if (static_cast<std::size_t>(output.size()) < totalProcessSize)
 	{
-		nat_Throw(CryptoException, u8"No enough space to output."_nv);
+		CAFE_THROW(CryptoException, u8"No enough space to output."_sv);
 	}
 	const auto paddingSize = totalProcessSize - input.size();
 	const auto frontPaddingSize = paddingSize - 7;
 
 	std::random_device randomDevice;
 	std::default_random_engine randomEngine{ randomDevice() };
-	const std::uniform_int_distribution<nuInt> dist{ 0x00, 0xFF };
+	std::uniform_int_distribution<std::uint32_t> dist{ 0x00, 0xFF };
 
 	std::uint32_t inputBuffer[2];
 	std::uint32_t outputBuffer[2];
@@ -139,7 +140,7 @@ std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 	const auto inputSize = static_cast<std::size_t>(input.size());
 	if (inputSize % TeaProcessUnitSize != 0 || inputSize < 16)
 	{
-		nat_Throw(CryptoException, u8"Invalid input data."_nv);
+		CAFE_THROW(CryptoException, u8"Invalid input data."_sv);
 	}
 
 	std::uint32_t inputBuffer[2];
@@ -169,11 +170,11 @@ std::size_t Tea::Decrypt(gsl::span<const std::byte> const& input, gsl::span<std:
 
 		if (processedLength == 0)
 		{
-			const auto outputBufferPtr = reinterpret_cast<nByte*>(outputBuffer);
+			const auto outputBufferPtr = reinterpret_cast<std::uint8_t*>(outputBuffer);
 			const std::size_t paddingSize = (outputBufferPtr[0] & 7u) + 10u;
 			if (static_cast<std::size_t>(output.size()) < inputSize - paddingSize)
 			{
-				nat_Throw(CryptoException, u8"No enough space to output."_nv);
+				CAFE_THROW(CryptoException, u8"No enough space to output."_sv);
 			}
 			frontPaddingSize = paddingSize - 7;
 			if (frontPaddingSize < TeaProcessUnitSize)

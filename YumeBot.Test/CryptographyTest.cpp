@@ -1,8 +1,12 @@
-﻿#include <catch.hpp>
 #include <Cryptography.h>
+#include <catch2/catch.hpp>
+#include <cstring>
+#include <iterator>
 
 using namespace YumeBot;
-using namespace NatsuLib;
+using namespace Cafe;
+using namespace Encoding;
+using namespace StringLiterals;
 
 TEST_CASE("Cryptography", "[Utility][Cryptography]")
 {
@@ -19,11 +23,15 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 		const auto formattedKey = FormatKey(Utility::ToByteSpan(key));
 
 		// 0x30303030 == { '0', '0', '0', '0' }
-		REQUIRE(std::all_of(std::cbegin(formattedKey), std::cend(formattedKey), [](std::uint32_t value) constexpr { return value == 0x30303030; }));
+		REQUIRE(std::all_of(
+		    std::cbegin(formattedKey), std::cend(formattedKey),
+		    [](std::uint32_t value) constexpr { return value == 0x30303030; }));
 
-		const auto resultSize = Encrypt(Utility::ToByteSpan(text), Utility::ToByteSpan(result), formattedKey);
+		const auto resultSize =
+		    Encrypt(Utility::ToByteSpan(text), Utility::ToByteSpan(result), formattedKey);
 		char decryptResult[std::size(result)]{};
-		const auto decryptResultSize = Decrypt(Utility::ToByteSpan(result), Utility::ToByteSpan(decryptResult), formattedKey);
+		const auto decryptResultSize =
+		    Decrypt(Utility::ToByteSpan(result), Utility::ToByteSpan(decryptResult), formattedKey);
 
 		REQUIRE(resultSize == CalculateOutputSize(std::size(text)));
 		REQUIRE(decryptResultSize == std::size(text));
@@ -39,12 +47,11 @@ TEST_CASE("Cryptography", "[Utility][Cryptography]")
 		std::byte result[16];
 		Calculate(Utility::ToByteSpan(test).subspan(0, std::size(test) - 1), result);
 
-		constexpr const std::uint8_t expectedResult[] = "\x09\x8f\x6b\xcd\x46\x21\xd3\x73\xca\xde\x4e\x83\x26\x27\xb4\xf6";
-		constexpr const auto expectedResultStr = u8"098f6bcd4621d373cade4e832627b4f6"_nv;
+		constexpr const std::uint8_t expectedResult[] =
+		    "\x09\x8f\x6b\xcd\x46\x21\xd3\x73\xca\xde\x4e\x83\x26\x27\xb4\xf6";
+		constexpr const auto expectedResultStr = u8"098f6bcd4621d373cade4e832627b4f6"_sv;
 		REQUIRE(std::memcmp(result, expectedResult, std::size(result)) == 0);
-		Md5ToHexString(result, [&](const char* begin, const char* end)
-		{
-			REQUIRE(nStrView{ begin, end } == expectedResultStr);
-		});
+		Md5ToHexString(
+		    result, [&](StringView<CodePage::Utf8> const& str) { REQUIRE(str == expectedResultStr.Trim()); });
 	}
 }

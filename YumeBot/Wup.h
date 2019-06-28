@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Jce.h"
-#include <natStringUtil.h>
+#include <Cafe/Io/Streams/MemoryStream.h>
+#include <Cafe/TextUtils/Format.h>
 
 namespace YumeBot::Jce::Wup
 {
@@ -20,152 +21,154 @@ namespace YumeBot::Jce::Wup
 		};
 
 		template <typename T>
-		constexpr ImplicitConvertibleIdentityType<Utility::RemoveCvRef<T>> ImplicitConvertibleIdentity{};
+		constexpr ImplicitConvertibleIdentityType<Utility::RemoveCvRef<T>>
+		    ImplicitConvertibleIdentity{};
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<std::uint8_t>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<std::uint8_t>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"char"_nv;
+			return CAFE_UTF8_SV("char");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<std::int16_t>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<std::int16_t>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"short"_nv;
+			return CAFE_UTF8_SV("short");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<std::int32_t>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<std::int32_t>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"int32"_nv;
+			return CAFE_UTF8_SV("int32");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<std::int64_t>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<std::int64_t>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"int64"_nv;
+			return CAFE_UTF8_SV("int64");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<float>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<float>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"float"_nv;
+			return CAFE_UTF8_SV("float");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<double>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<double>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"double"_nv;
+			return CAFE_UTF8_SV("double");
 		}
 
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<std::string>) noexcept
+		constexpr UsingStringView GetName(ImplicitConvertibleIdentityType<std::string>) noexcept
 		{
-			using namespace NatsuLib::StringLiterals;
-			return u8"string"_nv;
+			return CAFE_UTF8_SV("string");
 		}
 
-		nStrView GetName(NatsuLib::natRefPointer<JceStruct> const& value) noexcept;
+		UsingStringView GetName(std::shared_ptr<JceStruct> const& value) noexcept;
 
-#define JCE_STRUCT(name, alias) \
-		constexpr nStrView GetName(ImplicitConvertibleIdentityType<NatsuLib::natRefPointer<name>>) noexcept\
-		{\
-			using namespace NatsuLib::StringLiterals;\
-			return u8 ## alias ## _nv;\
-		}\
-		\
-		constexpr nStrView GetName(NatsuLib::natRefPointer<name> const&) noexcept\
-		{\
-			return GetName(ImplicitConvertibleIdentity<NatsuLib::natRefPointer<name>>);\
-		}
+#define JCE_STRUCT(name, alias)                                                                    \
+	constexpr UsingStringView GetName(                                                               \
+	    ImplicitConvertibleIdentityType<std::shared_ptr<name>>) noexcept                             \
+	{                                                                                                \
+		return CAFE_UTF8_SV(alias);                                                                    \
+	}                                                                                                \
+                                                                                                   \
+	constexpr UsingStringView GetName(std::shared_ptr<name> const&) noexcept                         \
+	{                                                                                                \
+		return GetName(ImplicitConvertibleIdentity<std::shared_ptr<name>>);                            \
+	}
 
 #include "JceStructDef.h"
 
 		template <typename T>
-		nString GetName(std::vector<T> const& value)
+		UsingString GetName(std::vector<T> const& value)
 		{
-			using namespace NatsuLib::StringLiterals;
+			using namespace Cafe::Encoding::StringLiterals;
 
 			if constexpr (std::is_same_v<JceStruct, T>)
 			{
 				if (value.empty())
 				{
-					return u8"list<?>"_ns;
+					return u8"list<?>"_s;
 				}
 
-				return NatsuLib::natUtil::FormatString(u8"list<{0}>"_nv, GetName(value.front()));
+				return Cafe::TextUtils::FormatString(CAFE_UTF8_SV("list<${0}>"), GetName(value.front()));
 			}
 			else
 			{
-				return NatsuLib::natUtil::FormatString(u8"list<{0}>"_nv, GetName(ImplicitConvertibleIdentity<T>));
+				return Cafe::TextUtils::FormatString(CAFE_UTF8_SV("list<${0}>"),
+				                                     GetName(ImplicitConvertibleIdentity<T>));
 			}
 		}
 
 		template <typename Key, typename Value>
-		nString GetName(std::unordered_map<Key, Value> const& value)
+		UsingString GetName(std::unordered_map<Key, Value> const& value)
 		{
-			using namespace NatsuLib::StringLiterals;
+			using namespace Cafe::Encoding::StringLiterals;
 
 			if constexpr (std::is_same_v<JceStruct, Key> || std::is_same_v<JceStruct, Value>)
 			{
 				if (value.empty())
 				{
-					return u8"map<?,?>"_ns;
+					return u8"map<?,?>"_s;
 				}
 
 				const auto& front = *value.cbegin();
-				return NatsuLib::natUtil::FormatString(u8"map<{0},{1}>"_nv, GetName(front.first), GetName(front.second));
+				return Cafe::TextUtils::FormatString(CAFE_UTF8_SV("map<${0},${1}>"), GetName(front.first),
+				                                     GetName(front.second));
 			}
 			else
 			{
-				return NatsuLib::natUtil::FormatString(u8"map<{0},{1}>"_nv, GetName(ImplicitConvertibleIdentity<Key>), GetName(ImplicitConvertibleIdentity<Value>));
+				return Cafe::TextUtils::FormatString(CAFE_UTF8_SV("map<${0},${1}>"),
+				                                     GetName(ImplicitConvertibleIdentity<Key>),
+				                                     GetName(ImplicitConvertibleIdentity<Value>));
 			}
 		}
-	}
+	} // namespace Detail
 
 	class OldUniAttribute
 	{
 	public:
 		template <typename T>
-		void Put(nString const& name, T const& value)
+		void Put(UsingString const& name, T const& value)
 		{
-			const auto memoryStream = NatsuLib::make_ref<NatsuLib::natMemoryStream>(0, false, true, true);
-			JceOutputStream out{ NatsuLib::make_ref<NatsuLib::natBinaryWriter>(memoryStream) };
+			Cafe::Io::MemoryStream memoryStream;
+			JceOutputStream out{ Cafe::Io::BinaryWriter{ &memoryStream } };
 			out.Write(0, value);
-			memoryStream->SetPositionFromBegin(0);
-			m_Data[name][Detail::GetName(value)].assign(reinterpret_cast<const std::uint8_t*>(memoryStream->GetInternalBuffer()),
-									  reinterpret_cast<const std::uint8_t*>(memoryStream->GetInternalBuffer() + memoryStream->GetSize()));
+			memoryStream.SeekFromBegin(0);
+			const auto internalStorage = memoryStream.GetInternalStorage();
+			m_Data[name][Detail::GetName(value)].assign(internalStorage.data(),
+			                                            internalStorage.data() + internalStorage.size());
 		}
 
 		template <typename T>
-		bool Get(nString const& name, T& result) const
+		bool Get(UsingString const& name, T& result) const
 		{
-			using namespace NatsuLib;
-
 			const auto iter = m_Data.find(name);
 			if (iter == m_Data.cend())
 			{
-				nat_Throw(natErrException, NatErr_NotFound, u8"No such key(\"{0}\")."_nv, name);
+				CAFE_THROW(Cafe::ErrorHandling::CafeException,
+				           Cafe::TextUtils::FormatString(CAFE_UTF8_SV("No such key(\"${0}\")."), name));
 			}
 
 			constexpr auto fieldTypeName = Detail::GetName(Detail::ImplicitConvertibleIdentity<T>);
 			const auto fieldIter = iter->second.find(fieldTypeName);
 			if (fieldIter == iter->second.cend())
 			{
-				nat_Throw(natErrException, NatErr_NotFound, u8"No such field of type({0})."_nv, fieldTypeName);
+				CAFE_THROW(Cafe::ErrorHandling::CafeException,
+				           Cafe::TextUtils::FormatString(CAFE_UTF8_SV("No such field of type(${0})."),
+				                                         fieldTypeName));
 			}
 
-			JceInputStream in{ make_ref<natBinaryReader>(make_ref<natExternMemoryStream>(fieldIter->second.data(), fieldIter->second.size(), true)) };
+			Cafe::Io::ExternalMemoryInputStream stream{ gsl::as_bytes(
+				  gsl::make_span(fieldIter->second.data(), fieldIter->second.size())) };
+			JceInputStream in{ Cafe::Io::BinaryReader{ &stream } };
 
 			return in.Read(0, result);
 		}
 
-		bool Remove(nString const& name);
+		bool Remove(UsingString const& name);
 
-		void Encode(NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> const& writer) const;
-		void Decode(NatsuLib::natRefPointer<NatsuLib::natBinaryReader> const& reader);
+		void Encode(Cafe::Io::BinaryWriter const& writer) const;
+		void Decode(Cafe::Io::BinaryReader const& reader);
 
 	private:
-		std::unordered_map<nString, std::unordered_map<nString, std::vector<std::uint8_t>>> m_Data;
+		std::unordered_map<UsingString, std::unordered_map<UsingString, std::vector<std::byte>>> m_Data;
 	};
 
 	class UniPacket
@@ -173,8 +176,8 @@ namespace YumeBot::Jce::Wup
 	public:
 		UniPacket();
 
-		void Encode(NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> const& writer);
-		void Decode(NatsuLib::natRefPointer<NatsuLib::natBinaryReader> const& reader);
+		void Encode(Cafe::Io::BinaryWriter const& writer);
+		void Decode(Cafe::Io::BinaryReader const& reader);
 
 		UniPacket CreateResponse();
 		void CreateOldRespEncode(JceOutputStream& os);
@@ -204,4 +207,4 @@ namespace YumeBot::Jce::Wup
 		OldUniAttribute m_UniAttribute;
 		std::int32_t m_OldRespIRet;
 	};
-}
+} // namespace YumeBot::Jce::Wup

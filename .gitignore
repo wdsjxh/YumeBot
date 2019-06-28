@@ -247,3 +247,5 @@ ModelManifest.xml
 /.vscode
 /.idea
 /build*
+
+/cmake-build-*

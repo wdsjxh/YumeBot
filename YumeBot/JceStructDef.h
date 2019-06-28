@@ -102,8 +102,8 @@ JCE_STRUCT_DEFAULT_ALIAS(RequestPacket)
 	STRING1(sFuncName, 6)
 	SIMPLE_LIST(sBuffer, 7)
 	INT(iTimeout, 8)
-	MAP(context, 9, TEMPLATE_ARGUMENT(nString, nString))
-	MAP(status, 10, TEMPLATE_ARGUMENT(nString, nString))
+	MAP(context, 9, TEMPLATE_ARGUMENT(UsingString, UsingString))
+	MAP(status, 10, TEMPLATE_ARGUMENT(UsingString, UsingString))
 END_JCE_STRUCT(RequestPacket)
 
 #undef SIMPLE_LIST

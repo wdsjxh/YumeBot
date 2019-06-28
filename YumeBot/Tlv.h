@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include <natBinary.h>
+#include <Cafe/Io/StreamHelpers/BinaryWriter.h>
 
 namespace YumeBot::Tlv
 {
 	class TlvBuilder
 	{
 	public:
-		explicit TlvBuilder(NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> writer)
+		explicit TlvBuilder(Cafe::Io::BinaryWriter writer)
 			: m_Writer{ std::move(writer) }
 		{
 		}
@@ -14,6 +14,6 @@ namespace YumeBot::Tlv
 
 
 	private:
-		NatsuLib::natRefPointer<NatsuLib::natBinaryWriter> m_Writer;
+		Cafe::Io::BinaryWriter m_Writer;
 	};
 }

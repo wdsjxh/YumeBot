@@ -1,10 +1,9 @@
-﻿#include <catch.hpp>
 #include <Jce.h>
 #include <Wup.h>
-#include <natStream.h>
+#include <catch2/catch.hpp>
 
-using namespace NatsuLib;
 using namespace YumeBot;
+using namespace Cafe::Encoding::StringLiterals;
 
 TEST_CASE("Jce", "[Jce]")
 {
@@ -12,25 +11,25 @@ TEST_CASE("Jce", "[Jce]")
 
 	SECTION("Serialization")
 	{
-		const auto test = make_ref<JceTest>();
+		const auto test = std::make_shared<JceTest>();
 		test->SetTestFloat(2.0f);
 		test->SetTestInt(233);
 		test->GetTestMap()[1] = 2.0f;
 		test->GetTestMap()[3] = 5.0f;
 
-		const auto memoryStream = make_ref<natMemoryStream>(0, true, true, true);
+		Cafe::Io::MemoryStream memoryStream;
 
 		{
-			JceOutputStream outputStream{ make_ref<natBinaryWriter>(memoryStream) };
+			JceOutputStream outputStream{ Cafe::Io::BinaryWriter(&memoryStream) };
 			outputStream.Write(0, test);
 		}
 
-		memoryStream->SetPositionFromBegin(0);
+		memoryStream.SeekFromBegin(0);
 
-		natRefPointer<JceTest> ptr;
+		std::shared_ptr<JceTest> ptr;
 
 		{
-			JceInputStream inputStream{ make_ref<natBinaryReader>(memoryStream) };
+			JceInputStream inputStream{ Cafe::Io::BinaryReader(&memoryStream) };
 			const auto readSucceed = inputStream.Read(0, ptr);
 			REQUIRE(readSucceed);
 		}
@@ -48,32 +47,34 @@ TEST_CASE("Jce", "[Jce]")
 		OldUniAttribute uniAttribute{};
 
 		{
-			uniAttribute.Put(u8"SomeInt"_ns, 1);
+			uniAttribute.Put(u8"SomeInt"_s, 1);
 			std::int32_t intValue;
-			REQUIRE(uniAttribute.Get(u8"SomeInt"_ns, intValue));
+			REQUIRE(uniAttribute.Get(u8"SomeInt"_s, intValue));
 			CHECK(intValue == 1);
 
-			uniAttribute.Put(u8"SomeFloat"_ns, 1.0f);
+			uniAttribute.Put(u8"SomeFloat"_s, 1.0f);
 			float floatValue;
-			REQUIRE(uniAttribute.Get(u8"SomeFloat"_ns, floatValue));
+			REQUIRE(uniAttribute.Get(u8"SomeFloat"_s, floatValue));
 			CHECK(floatValue == 1.0f);
 		}
 
-		const auto memoryStream = make_ref<natMemoryStream>(0, true, true, true);
-		uniAttribute.Encode(make_ref<natBinaryWriter>(memoryStream));
+		Cafe::Io::MemoryStream memoryStream;
+		uniAttribute.Encode(Cafe::Io::BinaryWriter(&memoryStream));
 
-		memoryStream->SetPositionFromBegin(0);
+		const auto span = memoryStream.GetInternalStorage();
+
+		memoryStream.SeekFromBegin(0);
 
 		{
 			OldUniAttribute readAttribute{};
-			readAttribute.Decode(make_ref<natBinaryReader>(memoryStream));
+			readAttribute.Decode(Cafe::Io::BinaryReader(&memoryStream));
 
 			std::int32_t intValue;
-			REQUIRE(readAttribute.Get(u8"SomeInt"_ns, intValue));
+			REQUIRE(readAttribute.Get(u8"SomeInt"_s, intValue));
 			CHECK(intValue == 1);
 
 			float floatValue;
-			REQUIRE(readAttribute.Get(u8"SomeFloat"_ns, floatValue));
+			REQUIRE(readAttribute.Get(u8"SomeFloat"_s, floatValue));
 			CHECK(floatValue == 1.0f);
 		}
 	}
@@ -84,40 +85,40 @@ TEST_CASE("Jce", "[Jce]")
 
 		UniPacket packet;
 
-		packet.GetAttribute().Put(u8"SomeInt"_ns, 1);
-		const auto test = make_ref<JceTest>();
+		packet.GetAttribute().Put(u8"SomeInt"_s, 1);
+		const auto test = std::make_shared<JceTest>();
 		test->SetTestFloat(2.0f);
 		test->SetTestInt(233);
 		test->GetTestMap()[1] = 2.0f;
-		packet.GetAttribute().Put(u8"JceTest"_ns, test);
+		packet.GetAttribute().Put(u8"JceTest"_s, test);
 
-		packet.GetRequestPacket().SetsFuncName(u8"FuncName?"_nv);
-		packet.GetRequestPacket().SetsServantName(u8"ServantName?"_nv);
+		packet.GetRequestPacket().SetsFuncName(u8"FuncName?"_sv);
+		packet.GetRequestPacket().SetsServantName(u8"ServantName?"_sv);
 
-		const auto memoryStream = make_ref<natMemoryStream>(0, true, true, true);
-		packet.Encode(make_ref<natBinaryWriter>(memoryStream));
+		Cafe::Io::MemoryStream memoryStream;
+		packet.Encode(Cafe::Io::BinaryWriter(&memoryStream));
 
-		memoryStream->SetPositionFromBegin(0);
+		memoryStream.SeekFromBegin(0);
 
 		{
 			UniPacket readPacket;
-			readPacket.Decode(make_ref<natBinaryReader>(memoryStream));
+			readPacket.Decode(Cafe::Io::BinaryReader(&memoryStream));
 
 			const auto& attribute = readPacket.GetAttribute();
 			std::int32_t intValue;
-			REQUIRE(attribute.Get(u8"SomeInt"_ns, intValue));
+			REQUIRE(attribute.Get(u8"SomeInt"_s, intValue));
 			CHECK(intValue == 1);
 
-			natRefPointer<JceTest> ptrValue;
-			REQUIRE(attribute.Get(u8"JceTest"_ns, ptrValue));
+			std::shared_ptr<JceTest> ptrValue;
+			REQUIRE(attribute.Get(u8"JceTest"_s, ptrValue));
 			REQUIRE(ptrValue);
 			CHECK(ptrValue->GetTestFloat() == 2.0f);
 			CHECK(ptrValue->GetTestInt() == 233);
 			CHECK(ptrValue->GetTestMap()[1] == 2.0f);
 
 			const auto& requestPacket = readPacket.GetRequestPacket();
-			CHECK(requestPacket.GetsFuncName() == u8"FuncName?"_nv);
-			CHECK(requestPacket.GetsServantName() == u8"ServantName?"_nv);
+			CHECK(requestPacket.GetsFuncName() == u8"FuncName?"_sv);
+			CHECK(requestPacket.GetsServantName() == u8"ServantName?"_sv);
 		}
 	}
 }
