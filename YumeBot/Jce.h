@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Misc.h"
 #include "Utility.h"
 #include <Cafe/Encoding/CodePage/UTF-8.h>
 #include <Cafe/ErrorHandling/ErrorHandling.h>
@@ -17,13 +18,6 @@ namespace YumeBot::Jce
 	CAFE_DEFINE_GENERAL_EXCEPTION(JceException);
 	CAFE_DEFINE_GENERAL_EXCEPTION(JceDecodeException, JceException);
 	CAFE_DEFINE_GENERAL_EXCEPTION(JceEncodeException, JceException);
-
-	static_assert(
-	    std::numeric_limits<float>::is_iec559 && std::numeric_limits<double>::is_iec559,
-	    "Jce assumed float and double fulfill the requirements of IEEE 754(IEC 559) standard.");
-
-	using UsingString = Cafe::Encoding::String<Cafe::Encoding::CodePage::Utf8>;
-	using UsingStringView = Cafe::Encoding::StringView<Cafe::Encoding::CodePage::Utf8>;
 
 	// Jce 中 Byte 是有符号的，此处表示为无符号，使用时需注意
 	// String 均不包含结尾空字符且编码不明，猜测为 GB2312，需注意
@@ -70,7 +64,7 @@ namespace YumeBot::Jce
 
 		static constexpr std::size_t MaxStringLength = 0x06400000;
 
-		~JceStruct();
+		virtual ~JceStruct();
 
 		[[nodiscard]] virtual UsingStringView GetJceStructName() const noexcept = 0;
 	};
@@ -99,7 +93,7 @@ namespace YumeBot::Jce
 	class JceInputStream
 	{
 	public:
-		explicit JceInputStream(Cafe::Io::BinaryReader reader);
+		explicit JceInputStream(Cafe::Io::InputStream* stream);
 
 		[[nodiscard]] Cafe::Io::BinaryReader& GetReader() noexcept;
 
@@ -117,9 +111,10 @@ namespace YumeBot::Jce
 		///	@param	value	要写入的值
 		///	@return	读取是否成功
 		///	@remark 对于 JceStruct，若传入的引用指针为 const
-		///限定的，则直接就地修改，否则将总是会创建新的实例并写入 			这是由于新的 JceStruct
-		///总是默认将引用指针初始化为空，而实际中未必总是需要新的实例引发的问题 			若传入 JceStruct
-		///派生的实例，也将就地修改
+		///限定的，则直接就地修改，否则将总是会创建新的实例并写入
+		///         这是由于新的 JceStruct
+		///         总是默认将引用指针初始化为空，而实际中未必总是需要新的实例引发的问题 若传入
+		///         JceStruct 派生的实例，也将就地修改
 		template <typename T>
 		[[nodiscard]] bool Read(std::uint32_t tag, T& value, Detail::NoneType = Detail::None)
 		{
@@ -385,7 +380,7 @@ namespace YumeBot::Jce
 	class JceOutputStream
 	{
 	public:
-		explicit JceOutputStream(Cafe::Io::BinaryWriter writer);
+		explicit JceOutputStream(Cafe::Io::OutputStream* stream);
 
 		[[nodiscard]] Cafe::Io::BinaryWriter& GetWriter() noexcept;
 

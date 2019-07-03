@@ -20,7 +20,7 @@ TEST_CASE("Jce", "[Jce]")
 		Cafe::Io::MemoryStream memoryStream;
 
 		{
-			JceOutputStream outputStream{ Cafe::Io::BinaryWriter(&memoryStream) };
+			JceOutputStream outputStream{ &memoryStream };
 			outputStream.Write(0, test);
 		}
 
@@ -29,7 +29,7 @@ TEST_CASE("Jce", "[Jce]")
 		std::shared_ptr<JceTest> ptr;
 
 		{
-			JceInputStream inputStream{ Cafe::Io::BinaryReader(&memoryStream) };
+			JceInputStream inputStream{ &memoryStream };
 			const auto readSucceed = inputStream.Read(0, ptr);
 			REQUIRE(readSucceed);
 		}
@@ -59,7 +59,7 @@ TEST_CASE("Jce", "[Jce]")
 		}
 
 		Cafe::Io::MemoryStream memoryStream;
-		uniAttribute.Encode(Cafe::Io::BinaryWriter(&memoryStream));
+		uniAttribute.Encode(&memoryStream);
 
 		const auto span = memoryStream.GetInternalStorage();
 
@@ -67,7 +67,7 @@ TEST_CASE("Jce", "[Jce]")
 
 		{
 			OldUniAttribute readAttribute{};
-			readAttribute.Decode(Cafe::Io::BinaryReader(&memoryStream));
+			readAttribute.Decode(&memoryStream);
 
 			std::int32_t intValue;
 			REQUIRE(readAttribute.Get(u8"SomeInt"_s, intValue));
@@ -96,13 +96,13 @@ TEST_CASE("Jce", "[Jce]")
 		packet.GetRequestPacket().SetsServantName(u8"ServantName?"_sv);
 
 		Cafe::Io::MemoryStream memoryStream;
-		packet.Encode(Cafe::Io::BinaryWriter(&memoryStream));
+		packet.Encode(&memoryStream);
 
 		memoryStream.SeekFromBegin(0);
 
 		{
 			UniPacket readPacket;
-			readPacket.Decode(Cafe::Io::BinaryReader(&memoryStream));
+			readPacket.Decode(&memoryStream);
 
 			const auto& attribute = readPacket.GetAttribute();
 			std::int32_t intValue;

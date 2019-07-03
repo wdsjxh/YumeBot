@@ -20,15 +20,15 @@ bool OldUniAttribute::Remove(UsingString const& name)
 	return !!m_Data.erase(name);
 }
 
-void OldUniAttribute::Encode(BinaryWriter const& writer) const
+void OldUniAttribute::Encode(Cafe::Io::OutputStream* stream) const
 {
-	JceOutputStream output{ writer };
+	JceOutputStream output{ stream };
 	output.Write(0, m_Data);
 }
 
-void OldUniAttribute::Decode(BinaryReader const& reader)
+void OldUniAttribute::Decode(Cafe::Io::InputStream* stream)
 {
-	JceInputStream input{ reader };
+	JceInputStream input{ stream };
 	m_Data.clear();
 	if (!input.Read(0, m_Data))
 	{
@@ -40,20 +40,22 @@ UniPacket::UniPacket() : m_OldRespIRet{}
 {
 }
 
-void UniPacket::Encode(BinaryWriter const& writer)
+void UniPacket::Encode(Cafe::Io::OutputStream* stream)
 {
 	MemoryStream tmpBuffer;
-	m_UniAttribute.Encode(Cafe::Io::BinaryWriter{ &tmpBuffer });
+	m_UniAttribute.Encode(&tmpBuffer);
 	const auto buffer = tmpBuffer.GetInternalStorage();
 	m_RequestPacket.GetsBuffer().assign(buffer.data(), buffer.data() + buffer.size());
 
-	const auto underlyingStream = dynamic_cast<SeekableStreamBase*>(writer.GetStream());
+	Cafe::Io::BinaryWriter writer{ stream, std::endian::little };
+
+	const auto underlyingStream = dynamic_cast<SeekableStreamBase*>(stream);
 	assert(underlyingStream);
 	const auto sizePos = underlyingStream->GetPosition();
 	// 占位 4 字节以便之后返回写入长度信息
 	writer.Write(std::uint32_t{});
 
-	JceOutputStream os{ writer };
+	JceOutputStream os{ stream };
 	os.Write(0, m_RequestPacket);
 	const auto endPos = underlyingStream->GetPosition();
 	const auto length = endPos - sizePos;
@@ -62,20 +64,20 @@ void UniPacket::Encode(BinaryWriter const& writer)
 	underlyingStream->SeekFromBegin(endPos);
 }
 
-void UniPacket::Decode(BinaryReader const& reader)
+void UniPacket::Decode(Cafe::Io::InputStream* stream)
 {
-	const auto underlyingStream = dynamic_cast<SeekableStreamBase*>(reader.GetStream());
+	const auto underlyingStream = dynamic_cast<SeekableStreamBase*>(stream);
 	assert(underlyingStream);
 	underlyingStream->Seek(SeekOrigin::Current, 4);
-	JceInputStream is{ reader };
+	JceInputStream is{ stream };
 	if (!is.Read(0, m_RequestPacket))
 	{
 		CAFE_THROW(CafeException, u8"Read RequestPacket failed."_sv);
 	}
 
 	const auto& buffer = m_RequestPacket.GetsBuffer();
-	ExternalMemoryInputStream stream{ gsl::as_bytes(gsl::make_span(buffer.data(), buffer.size())) };
-	m_UniAttribute.Decode(Cafe::Io::BinaryReader{ &stream });
+	ExternalMemoryInputStream bufferStream{ gsl::as_bytes(gsl::make_span(buffer.data(), buffer.size())) };
+	m_UniAttribute.Decode(&bufferStream);
 }
 
 UniPacket UniPacket::CreateResponse()
@@ -91,7 +93,7 @@ UniPacket UniPacket::CreateResponse()
 void UniPacket::CreateOldRespEncode(JceOutputStream& os)
 {
 	MemoryStream memoryStream;
-	m_UniAttribute.Encode(Cafe::Io::BinaryWriter{ &memoryStream });
+	m_UniAttribute.Encode(&memoryStream);
 
 	os.Write(1, m_RequestPacket.GetiVersion());
 	os.Write(2, m_RequestPacket.GetcPacketType());

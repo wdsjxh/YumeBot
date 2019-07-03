@@ -8,12 +8,9 @@ JceStruct::~JceStruct()
 {
 }
 
-JceInputStream::JceInputStream(Cafe::Io::BinaryReader reader) : m_Reader{ std::move(reader) }
+JceInputStream::JceInputStream(Cafe::Io::InputStream* stream)
+    : m_Reader{ stream, std::endian::little }
 {
-	if (m_Reader.GetUsingEndian() != std::endian::little)
-	{
-		CAFE_THROW(JceDecodeException, u8"reader should use little endian."_sv);
-	}
 }
 
 Cafe::Io::BinaryReader& JceInputStream::GetReader() noexcept
@@ -441,12 +438,9 @@ bool JceInputStream::doRead(std::uint32_t tag, gsl::span<std::byte> const& value
 	return false;
 }
 
-JceOutputStream::JceOutputStream(Cafe::Io::BinaryWriter writer) : m_Writer{ std::move(writer) }
+JceOutputStream::JceOutputStream(Cafe::Io::OutputStream* stream)
+    : m_Writer{ stream, std::endian::little }
 {
-	if (m_Writer.GetUsingEndian() != std::endian::little)
-	{
-		CAFE_THROW(JceDecodeException, u8"writer should use little endian."_sv);
-	}
 }
 
 Cafe::Io::BinaryWriter& JceOutputStream::GetWriter() noexcept

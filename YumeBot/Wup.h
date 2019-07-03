@@ -128,7 +128,7 @@ namespace YumeBot::Jce::Wup
 		void Put(UsingString const& name, T const& value)
 		{
 			Cafe::Io::MemoryStream memoryStream;
-			JceOutputStream out{ Cafe::Io::BinaryWriter{ &memoryStream } };
+			JceOutputStream out{ &memoryStream };
 			out.Write(0, value);
 			memoryStream.SeekFromBegin(0);
 			const auto internalStorage = memoryStream.GetInternalStorage();
@@ -157,15 +157,15 @@ namespace YumeBot::Jce::Wup
 
 			Cafe::Io::ExternalMemoryInputStream stream{ gsl::as_bytes(
 				  gsl::make_span(fieldIter->second.data(), fieldIter->second.size())) };
-			JceInputStream in{ Cafe::Io::BinaryReader{ &stream } };
+			JceInputStream in{ &stream };
 
 			return in.Read(0, result);
 		}
 
 		bool Remove(UsingString const& name);
 
-		void Encode(Cafe::Io::BinaryWriter const& writer) const;
-		void Decode(Cafe::Io::BinaryReader const& reader);
+		void Encode(Cafe::Io::OutputStream* stream) const;
+		void Decode(Cafe::Io::InputStream* stream);
 
 	private:
 		std::unordered_map<UsingString, std::unordered_map<UsingString, std::vector<std::byte>>> m_Data;
@@ -176,8 +176,8 @@ namespace YumeBot::Jce::Wup
 	public:
 		UniPacket();
 
-		void Encode(Cafe::Io::BinaryWriter const& writer);
-		void Decode(Cafe::Io::BinaryReader const& reader);
+		void Encode(Cafe::Io::OutputStream* stream);
+		void Decode(Cafe::Io::InputStream* stream);
 
 		UniPacket CreateResponse();
 		void CreateOldRespEncode(JceOutputStream& os);
