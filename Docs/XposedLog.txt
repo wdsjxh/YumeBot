@@ -1,0 +1,414 @@
+08-04 22:52:40.159 2906-2906/? I/Xposed: Loaded package: com.tencent.mobileqq
+08-04 22:52:41.005 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:41.005 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:reportMsg ssoSeq:47450 appId:537039093 appSeq:1 sName:com.tencent.mobileqq.msf.service.MsfService uin:0 sCmd:ConfigService.ClientReq t:30000 needResp:true
+08-04 22:52:41.014 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:41.014 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: (null)
+08-04 22:52:41.089 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:41.089 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: (null)
+08-04 22:52:41.162 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:41.162 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:0 serviceCmd:ConfigService.ClientReq appId:-1 appSeq:47450
+08-04 22:52:41.166 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:41.166 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:41.166 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:48.953 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method GetStWithPasswd
+08-04 22:52:48.953 2906-2921/com.tencent.mobileqq:MSF I/Xposed: userAccount : (已删除), dwAppid = 16, dwMainSigMap = 1970272, dwSubAppid = 537039093, dwSubAppidList = (null), bPwdMd5 = true, userPasswd = (已删除，似乎是强行转到字符串的 md5), userSigInfo = oicq.wlogin_sdk.request.WUserSigInfo@537659f, st = null, isSmsLogin = false, sync = 0
+08-04 22:52:48.954 2906-2921/com.tencent.mobileqq:MSF I/Xposed: stackTrace: [
+    dalvik.system.VMStack.getThreadStackTrace(Native Method),
+    java.lang.Thread.getStackTrace(Thread.java:580),
+    moe.hotococoa.xposedsandbox.XposedSandbox$handleLoadPackage$7.beforeHookedMethod(XposedSandbox.kt:167),
+    de.robv.android.xposed.XposedBridge.handleHookedMethod(XposedBridge.java:340),
+    oicq.wlogin_sdk.request.WtloginHelper.GetStWithPasswd(<Xposed>),
+    oicq.wlogin_sdk.request.WtloginHelper.GetStWithPasswdMd5(WtloginHelper.java:1243),
+    com.tencent.mobileqq.msf.core.auth.h.a(Unknown Source),
+    com.tencent.mobileqq.msf.core.MsfCore.login(Unknown Source),
+    com.tencent.mobileqq.msf.service.f.a(Unknown Source),
+    com.tencent.mobileqq.msf.service.e.sendToServiceMsg(Unknown Source),
+    com.tencent.qphone.base.remote.IBaseService$Stub.onTransact(Unknown Source),
+    android.os.Binder.execTransact(Binder.java:446)
+]
+08-04 22:52:48.955 2906-2983/com.tencent.mobileqq:MSF I/Xposed: Hooked method GetStWithPasswd
+08-04 22:52:48.955 2906-2983/com.tencent.mobileqq:MSF I/Xposed: sync call ignored.
+08-04 22:52:48.965 2906-2983/com.tencent.mobileqq:MSF I/Xposed: Hooked method make_request
+08-04 22:52:48.967 2906-2983/com.tencent.mobileqq:MSF I/Xposed: appId = 16, subAppId = 537039093, clientVersion = 1, uin = (已删除), rc = 0, clientIp = 00000000, initTime = 5d46f26c, savePwd = 0, pwdMd5 = (已删除，密码的 md5), sigSrc = 1, bitmap = 32636, getSig = 66560, subAppIdList = (null), getSig1 = 1970400, wxAppId = 537039093, appClientVersion = 1, picType = 0, capType = 0, picSize = 0, retType = 1, ksid = dd1c2351d59086a9bf3493c91ccfa48d, userSigInfo = oicq.wlogin_sdk.request.WUserSigInfo@537659f, userSigInfo._domains = [ game.qq.com ]
+08-04 22:52:48.967 2906-2983/com.tencent.mobileqq:MSF I/Xposed: stackTrace: [
+    dalvik.system.VMStack.getThreadStackTrace(Native Method),
+    java.lang.Thread.getStackTrace(Thread.java:580),
+    moe.hotococoa.xposedsandbox.XposedSandbox$handleLoadPackage$5.beforeHookedMethod(XposedSandbox.kt:118),
+    de.robv.android.xposed.XposedBridge.handleHookedMethod(XposedBridge.java:340),
+    oicq.wlogin_sdk.request.request_TGTGT.make_request(<Xposed>),
+    oicq.wlogin_sdk.request.WtloginHelper.GetStWithPasswd(WtloginHelper.java:1528),
+    de.robv.android.xposed.XposedBridge.invokeOriginalMethodNative(Native Method),
+    de.robv.android.xposed.XposedBridge.handleHookedMethod(XposedBridge.java:360),
+    oicq.wlogin_sdk.request.WtloginHelper.GetStWithPasswd(<Xposed>),
+    oicq.wlogin_sdk.request.WtloginHelper.access$400(WtloginHelper.java:51),
+    oicq.wlogin_sdk.request.WtloginHelper$HelperThread.run(WtloginHelper.java:4210)
+]
+08-04 22:52:48.985 2906-2984/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:48.985 2906-2984/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:wt_loginAuth ssoSeq:47456 appId:537039093 appSeq:2 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:wtlogin.login t:40000 needResp:true
+08-04 22:52:48.985 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:48.985 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.045 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.045 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:wtlogin.login appId:-1 appSeq:47456
+08-04 22:52:49.045 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.045 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.045 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.097 2906-2987/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.097 2906-2987/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:wt_other ssoSeq:47458 appId:537039093 appSeq:-1 sName: uin:(已删除) sCmd:wtlogin.trans_emp t:45000 needResp:true
+08-04 22:52:49.097 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.097 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.099 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.099 2906-2975/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:checkRole ssoSeq:47460 appId:537039093 appSeq:-1 sName: uin:(已删除) sCmd:GrayUinPro.Check t:30000 needResp:true
+08-04 22:52:49.110 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.110 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.110 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.111 2906-2975/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:checkRole ssoSeq:47462 appId:537039093 appSeq:-1 sName: uin:(已删除) sCmd:GrayUinPro.Check t:30000 needResp:true
+08-04 22:52:49.121 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.121 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.128 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.128 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:GrayUinPro.Check appId:-1 appSeq:47460
+08-04 22:52:49.128 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.128 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.128 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.136 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.136 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:GrayUinPro.Check appId:-1 appSeq:47462
+08-04 22:52:49.136 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.136 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.136 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.157 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.157 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:wtlogin.trans_emp appId:-1 appSeq:47458
+08-04 22:52:49.157 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.157 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.157 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.623 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.623 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:reportMsg ssoSeq:47467 appId:537039093 appSeq:5 sName:com.tencent.mobileqq.msf.service.MsfService uin:0 sCmd:ConfigService.ClientReq t:30000 needResp:true
+08-04 22:52:49.624 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.624 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.627 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.627 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47469 appId:537039093 appSeq:6 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:OidbSvc.0x7a2_0 t:30000 needResp:true
+08-04 22:52:49.638 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.638 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.645 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.646 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:0 serviceCmd:ConfigService.ClientReq appId:-1 appSeq:47467
+08-04 22:52:49.646 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.646 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.646 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.675 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:49.675 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:_msf_RegPush ssoSeq:47472 appId:537039093 appSeq:8 sName: uin:(已删除) sCmd:StatSvc.register t:30000 needResp:true
+08-04 22:52:49.675 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:49.675 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:49.685 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.685 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:OidbSvc.0x7a2_0 appId:-1 appSeq:47469
+08-04 22:52:49.686 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.686 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.686 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:49.808 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:49.808 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:StatSvc.register appId:-1 appSeq:47472
+08-04 22:52:49.809 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:49.809 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:49.809 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.291 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.291 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47475 appId:537039093 appSeq:9 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:RegPrxySvc.infoLogin t:30000 needResp:true
+08-04 22:52:50.291 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.291 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.327 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.328 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.GetMsgV2 appId:-1 appSeq:-1290219796
+08-04 22:52:50.328 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.328 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.328 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.infoLogin appId:-1 appSeq:47475
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.PushParam appId:-1 appSeq:-1290219795
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.376 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.377 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.377 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.PullGroupMsgSeq appId:-1 appSeq:-1290219794
+08-04 22:52:50.377 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.377 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.377 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.380 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.380 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.PbGetMsg appId:-1 appSeq:-1290219793
+08-04 22:52:50.380 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.380 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.380 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.381 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.381 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.NoticeEnd appId:-1 appSeq:-1290219792
+08-04 22:52:50.381 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.381 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.381 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.411 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.411 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47478 appId:537039093 appSeq:10 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:RegPrxySvc.getOffMsg t:30000 needResp:true
+08-04 22:52:50.411 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.411 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.430 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.430 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.getOffMsg appId:-1 appSeq:47478
+08-04 22:52:50.430 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.430 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.430 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.476 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.476 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.PullGroupMsgSeq appId:-1 appSeq:-1290219496
+08-04 22:52:50.476 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.476 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.476 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.480 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.481 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47479 appId:537039093 appSeq:11 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:AvatarUpdate.checkUpdate t:30000 needResp:true
+08-04 22:52:50.481 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.481 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.489 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.489 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.PbGetGroupMsg appId:-1 appSeq:-1290219495
+08-04 22:52:50.489 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.489 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.489 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.490 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.490 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:RegPrxySvc.NoticeEnd appId:-1 appSeq:-1290219494
+08-04 22:52:50.490 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.490 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.490 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.536 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.536 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:AvatarUpdate.checkUpdate appId:-1 appSeq:47479
+08-04 22:52:50.536 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.536 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.536 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.590 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.590 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47480 appId:537039093 appSeq:12 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:friendlist.GetTroopListReqV2 t:30000 needResp:true
+08-04 22:52:50.590 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.590 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.615 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.615 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47481 appId:537039093 appSeq:13 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ProfileService.SearchGroup t:30000 needResp:true
+08-04 22:52:50.615 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.615 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.634 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.634 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:friendlist.GetTroopListReqV2 appId:-1 appSeq:47480
+08-04 22:52:50.634 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.634 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.634 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.649 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.650 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:getPluginConfig ssoSeq:47483 appId:537039093 appSeq:14 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigService.ClientReq t:30000 needResp:true
+08-04 22:52:50.650 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.650 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.652 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.652 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:getPluginConfig ssoSeq:47484 appId:537039093 appSeq:15 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigService.ClientReq t:30000 needResp:true
+08-04 22:52:50.659 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.660 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ProfileService.SearchGroup appId:-1 appSeq:47481
+08-04 22:52:50.660 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.660 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.660 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.661 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.661 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.665 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.665 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47486 appId:537039093 appSeq:17 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigService.GetResourceReq t:30000 needResp:true
+08-04 22:52:50.673 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.673 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.677 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.677 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigService.ClientReq appId:-1 appSeq:47483
+08-04 22:52:50.677 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.677 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.677 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigService.ClientReq appId:-1 appSeq:47484
+08-04 22:52:50.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.689 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.689 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.718 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:50.718 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47487 appId:537039093 appSeq:18 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ProfileService.CheckUpdateReq t:30000 needResp:true
+08-04 22:52:50.719 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:50.719 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:50.728 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.728 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigService.GetResourceReq appId:-1 appSeq:47486
+08-04 22:52:50.728 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.729 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.729 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:50.950 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:50.950 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ProfileService.CheckUpdateReq appId:-1 appSeq:47487
+08-04 22:52:50.950 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:50.950 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:50.950 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.050 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.050 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47488 appId:537039093 appSeq:19 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:CarrierEntry.queryCarrier t:30000 needResp:true
+08-04 22:52:51.051 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.051 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.072 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.072 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:CarrierEntry.queryCarrier appId:-1 appSeq:47488
+08-04 22:52:51.073 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.073 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.073 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.084 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.084 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47489 appId:537039093 appSeq:20 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:EqqAccountSvc.get_eqq_list t:30000 needResp:true
+08-04 22:52:51.084 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.084 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.087 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.087 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47490 appId:537039093 appSeq:21 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:PubAccountSvc.get_follow_list t:30000 needResp:true
+08-04 22:52:51.090 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.090 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47491 appId:537039093 appSeq:22 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:OidbSvc.0x4fc_30 t:10000 needResp:true
+08-04 22:52:51.095 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.095 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.102 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.102 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47492 appId:537039093 appSeq:23 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:SQQzoneSvc.getQQLoginMsgListData t:60000 needResp:true
+08-04 22:52:51.106 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.106 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.113 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.113 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:EqqAccountSvc.get_eqq_list appId:-1 appSeq:47489
+08-04 22:52:51.113 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.113 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.113 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.117 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.117 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.132 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.132 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:OidbSvc.0x4fc_30 appId:-1 appSeq:47491
+08-04 22:52:51.132 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.132 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.132 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.139 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.139 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47493 appId:537039093 appSeq:24 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:BQMallSvc.TabOpReq t:30000 needResp:true
+08-04 22:52:51.139 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.139 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.141 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.141 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47494 appId:537039093 appSeq:25 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ProfileService.GetSimpleInfo t:30000 needResp:true
+08-04 22:52:51.144 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.144 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:PubAccountSvc.get_follow_list appId:-1 appSeq:47490
+08-04 22:52:51.144 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.144 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.144 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.150 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.150 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.156 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.156 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47495 appId:537039093 appSeq:26 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:SsoSnsSession.Cmd0x3_SubCmd0x1_FuncGetBlockList t:60000 needResp:true
+08-04 22:52:51.160 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.160 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47496 appId:537039093 appSeq:27 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:CliLogSvc.UploadReq t:30000 needResp:true
+08-04 22:52:51.160 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.160 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.162 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.162 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47497 appId:537039093 appSeq:28 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:TransService.ReqGetSign t:30000 needResp:true
+08-04 22:52:51.166 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.167 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:SQQzoneSvc.getQQLoginMsgListData appId:-1 appSeq:47492
+08-04 22:52:51.167 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.167 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.167 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.171 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.171 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.171 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.171 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:BQMallSvc.TabOpReq appId:-1 appSeq:47493
+08-04 22:52:51.172 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.172 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.172 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.181 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.181 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.185 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.185 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:SsoSnsSession.Cmd0x3_SubCmd0x1_FuncGetBlockList appId:-1 appSeq:47495
+08-04 22:52:51.185 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.185 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.185 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ProfileService.GetSimpleInfo appId:-1 appSeq:47494
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:CliLogSvc.UploadReq appId:-1 appSeq:47496
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.193 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.238 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.238 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:TransService.ReqGetSign appId:-1 appSeq:47497
+08-04 22:52:51.238 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.238 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.238 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.258 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.258 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47501 appId:537039093 appSeq:29 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:SQQzoneSvc.getUndealCount t:30000 needResp:true
+08-04 22:52:51.258 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.258 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.260 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.260 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47502 appId:537039093 appSeq:30 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigurationService.ReqGetConfig t:30000 needResp:true
+08-04 22:52:51.261 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.261 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47503 appId:537039093 appSeq:31 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigurationService.ReqGetConfig t:30000 needResp:true
+08-04 22:52:51.261 2906-3009/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.261 2906-3009/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47504 appId:537039093 appSeq:32 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigurationService.ReqGetConfig t:30000 needResp:true
+08-04 22:52:51.264 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:51.264 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47505 appId:537039093 appSeq:33 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:ConfigService.ClientReq t:20000 needResp:true
+08-04 22:52:51.269 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.269 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.280 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.280 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.291 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.291 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.302 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:51.302 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:51.308 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.308 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:SQQzoneSvc.getUndealCount appId:-1 appSeq:47501
+08-04 22:52:51.308 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.308 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.308 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigurationService.ReqGetConfig appId:-1 appSeq:47502
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigService.ClientReq appId:-1 appSeq:47505
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.355 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.401 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.401 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigurationService.ReqGetConfig appId:-1 appSeq:47504
+08-04 22:52:51.401 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.401 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.401 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:51.409 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:51.409 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigurationService.ReqGetConfig appId:-1 appSeq:47503
+08-04 22:52:51.409 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:51.409 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:51.409 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:52.674 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:52.675 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigPushSvc.PushDomain appId:-1 appSeq:-658642814
+08-04 22:52:52.675 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:52.675 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:52.675 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:52.687 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:52.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:ConfigPushSvc.PushReq appId:-1 appSeq:-658642816
+08-04 22:52:52.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:52.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:52.688 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:52.691 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:52.691 2906-2979/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:-658642816 appId:537039093 appSeq:-1 sName: uin:(已删除) sCmd:ConfigPushSvc.PushResp t:30000 needResp:false
+08-04 22:52:52.691 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:52.691 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:53.770 2906-3064/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:53.770 2906-3064/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:wt_CheckDevLockStatus ssoSeq:47508 appId:537039093 appSeq:34 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:wtlogin.trans_emp t:30000 needResp:true
+08-04 22:52:53.771 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:53.771 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:53.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:53.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:wtlogin.trans_emp appId:-1 appSeq:47508
+08-04 22:52:53.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:53.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:53.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:56.824 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:56.824 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47509 appId:537039093 appSeq:36 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:StatSvc.BindUin t:30000 needResp:true
+08-04 22:52:56.824 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:56.824 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:56.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:56.846 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:StatSvc.BindUin appId:-1 appSeq:47509
+08-04 22:52:56.847 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:56.847 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:56.847 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:56.870 2906-2922/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:56.870 2906-2922/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:unknown ssoSeq:47511 appId:537039093 appSeq:37 sName:com.tencent.mobileqq.msf.service.MsfService uin:(已删除) sCmd:StatSvc.BindUin t:30000 needResp:true
+08-04 22:52:56.870 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:56.870 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:56.896 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:56.896 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:StatSvc.BindUin appId:-1 appSeq:47511
+08-04 22:52:56.896 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:56.896 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:56.896 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d
+08-04 22:52:57.019 2906-2921/com.tencent.mobileqq:MSF I/Xposed: Hooked method b(ToServiceMsg)
+08-04 22:52:57.019 2906-2921/com.tencent.mobileqq:MSF I/Xposed: ToServiceMsg: ToServiceMsg msName:_msf_UnRegPush ssoSeq:47513 appId:537039093 appSeq:38 sName: uin:(已删除) sCmd:StatSvc.register t:30000 needResp:true
+08-04 22:52:57.019 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Hooked method b()
+08-04 22:52:57.020 2906-2975/com.tencent.mobileqq:MSF I/Xposed: Returned msgCookie: 907c6b5d
+08-04 22:52:57.070 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method onResponse
+08-04 22:52:57.070 2906-2979/com.tencent.mobileqq:MSF I/Xposed: FromServiceMsg: FromServiceMsg msName:unknown ssoSeq:-1 failCode:1000 errorMsg: uin:(已删除) serviceCmd:StatSvc.register appId:-1 appSeq:47513
+08-04 22:52:57.070 2906-2979/com.tencent.mobileqq:MSF I/Xposed: msgCookie: 907c6b5d
+08-04 22:52:57.070 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Hooked method a
+08-04 22:52:57.070 2906-2979/com.tencent.mobileqq:MSF I/Xposed: Setting msgCookie: 907c6b5d

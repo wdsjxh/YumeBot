@@ -31,5 +31,7 @@ TabWidth: 2
 PointerAlignment: Left
 ColumnLimit: 100
 AlwaysBreakTemplateDeclarations: Yes
+MacroBlockBegin: "^JCE_STRUCT.*$"
+MacroBlockEnd: "^END_JCE_STRUCT$"
 
 ...

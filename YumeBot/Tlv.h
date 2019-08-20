@@ -1,25 +1,63 @@
 ﻿#pragma once
 #include "Cryptography.h"
 #include "Misc.h"
+#include <Cafe/Io/StreamHelpers/BinaryReader.h>
 #include <Cafe/Io/StreamHelpers/BinaryWriter.h>
 #include <Cafe/Io/Streams/MemoryStream.h>
-#include <asio/ip/address_v4.hpp>
 #include <random>
 
 namespace YumeBot::Tlv
 {
+	/// @brief  表示指定 Cmd 的 Tlv
+	/// @remark 若 Tlv 具有读取的能力，应当自行管理生命周期问题
+	///         即若 Tlv 不需要读取，可以全部使用视图而不是容器保存自身的值
 	template <std::uint16_t Cmd>
 	struct TlvT
 	{
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
 		}
+
+		static TlvT<Cmd> Read(Cafe::Io::BinaryReader& reader, std::size_t bodySize)
+		{
+			return {};
+		}
 	};
+
+	template <std::uint16_t Cmd, typename = void>
+	struct IsWritableTlvTrait : std::false_type
+	{
+	};
+
+	template <>
+	struct IsWritableTlvTrait<
+	    Cmd, std::void_t<decltype(TlvT<Cmd>::Write(std::declval<Cafe::Io::BinaryWriter&>()))>>
+	    : std::true_type
+	{
+	};
+
+	template <std::uint16_t Cmd>
+	constexpr bool IsWritableTlv = IsWritableTlvTrait<Cmd>::value;
+
+	template <std::uint16_t Cmd, typename = void>
+	struct IsReadableTlvTrait : std::false_type
+	{
+	};
+
+	template <std::uint16_t Cmd>
+	struct IsReadableTlvTrait<
+	    Cmd, std::void_t<decltype(TlvT<Cmd>::Read(std::declval<Cafe::Io::BinaryReader&>(),
+	                                              std::declval<std::size_t>()))>> : std::true_type
+	{
+	};
+
+	template <std::uint16_t Cmd>
+	constexpr bool IsReadableTlv = IsReadableTlvTrait<Cmd>::value;
 
 	class TlvBuilder
 	{
 	public:
-		explicit TlvBuilder(Cafe::Io::OutputStream* stream);
+		explicit TlvBuilder(Cafe::Io::OutputStream* stream, std::size_t initialTlvCount = 0);
 
 		template <std::uint16_t Cmd>
 		void WriteTlv(TlvT<Cmd> const& tlv)
@@ -37,10 +75,49 @@ namespace YumeBot::Tlv
 			assert(length <= std::numeric_limits<std::uint16_t>::max());
 			seekableStream->SeekFromBegin(lengthPos);
 			m_Writer.Write(static_cast<std::uint16_t>(length));
+
+			++m_TlvCount;
 		}
+
+		std::size_t GetTlvCount() const noexcept;
 
 	private:
 		Cafe::Io::BinaryWriter m_Writer;
+		std::size_t m_TlvCount;
+	};
+
+	class TlvReader
+	{
+	public:
+		explicit TlvReader(Cafe::Io::InputStream* stream);
+
+		template <std::uint16_t Cmd>
+		std::optional<TlvT<Cmd>> ReadTlv()
+		{
+			const auto stream = m_Reader.GetStream();
+			const auto seekableStream = dynamic_cast<Cafe::Io::SeekableStreamBase*>(stream);
+			assert(seekableStream);
+			seekableStream->SeekFromBegin(0);
+
+			while (stream->GetAvailableBytes() > 4)
+			{
+				const auto cmd = m_Reader.Read<std::uint16_t>();
+				const auto bodySize = m_Reader.Read<std::uint16_t>();
+				if (cmd == Cmd)
+				{
+					return TlvT<Cmd>::Read(m_Reader, bodySize);
+				}
+				else
+				{
+					seekableStream->Seek(Cafe::Io::SeekOrigin::Current, bodySize);
+				}
+			}
+
+			return {};
+		}
+
+	private:
+		Cafe::Io::BinaryReader m_Reader;
 	};
 
 	template <>
@@ -50,15 +127,15 @@ namespace YumeBot::Tlv
 		{
 			writer.Write(Uin);
 			writer.Write(ServerTime);
-			if (!ClientIp.is_unspecified())
+			if (!ClientIp.IsUnspecified())
 			{
-				writer.GetStream()->WriteBytes(gsl::as_bytes(gsl::make_span(ClientIp.to_bytes())));
+				writer.GetStream()->WriteBytes(gsl::as_bytes(gsl::make_span(ClientIp.Content)));
 			}
 		}
 
 		std::uint32_t Uin;
 		std::uint32_t ServerTime;
-		asio::ip::address_v4 ClientIp = {};
+		IpV4Addr ClientIp = {};
 	};
 
 	template <>
@@ -91,12 +168,12 @@ namespace YumeBot::Tlv
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
 			writer.Write(TimeZoneVer);
-			writer.Write(LocaleId);
+			writer.Write(static_cast<std::uint32_t>(LocaleId));
 			writer.Write(TimeZoneOffset);
 		}
 
 		std::uint16_t TimeZoneVer = 0;
-		std::uint32_t LocaleId = static_cast<std::uint32_t>(UsingLocaleId);
+		LocaleIdEnum LocaleId = UsingLocaleId;
 		std::uint16_t TimeZoneOffset = 0;
 	};
 
@@ -181,9 +258,9 @@ namespace YumeBot::Tlv
 			unencryptedBodyWriter.Write(ClientVer);
 			unencryptedBodyWriter.Write(Uin);
 			unencryptedBodyStream.WriteBytes(InitTime);
-			if (!ClientIp.is_unspecified())
+			if (!ClientIp.IsUnspecified())
 			{
-				unencryptedBodyStream.WriteBytes(gsl::as_bytes(gsl::make_span(ClientIp.to_bytes())));
+				unencryptedBodyStream.WriteBytes(gsl::as_bytes(gsl::make_span(ClientIp.Content)));
 			}
 			unencryptedBodyWriter.Write(SavePwd);
 			unencryptedBodyStream.WriteBytes(Md5);
@@ -238,13 +315,13 @@ namespace YumeBot::Tlv
 		std::uint32_t ClientVer;
 		std::uint64_t Uin;
 		gsl::span<const std::byte> InitTime;
-		asio::ip::address_v4 ClientIp;
+		IpV4Addr ClientIp;
 		bool SavePwd;
-		gsl::span<const std::byte> Md5;
+		gsl::span<const std::byte, 16> Md5;
 		std::uint64_t MSalt;
 		gsl::span<const std::byte> TGTGTKey;
 		bool ReadFlg;
-		gsl::span<const std::byte> Guid;
+		gsl::span<const std::byte, 16> Guid;
 		std::uint32_t SigSrc;
 	};
 
@@ -270,10 +347,17 @@ namespace YumeBot::Tlv
 	{
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
-			writer.GetStream()->WriteBytes(Ksid);
+			writer.GetStream()->WriteBytes(gsl::make_span(Ksid));
 		}
 
-		gsl::span<const std::byte> Ksid;
+		static TlvT<0x108> Read(Cafe::Io::BinaryReader& reader, std::size_t bodySize)
+		{
+			TlvT<0x108> tlv{ { bodySize } };
+			reader.GetStream()->ReadBytes(gsl::make_span(tlv.Ksid));
+			return tlv;
+		}
+
+		std::vector<std::byte> Ksid;
 	};
 
 	template <>
@@ -281,10 +365,11 @@ namespace YumeBot::Tlv
 	{
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
-			writer.GetStream()->WriteBytes(Imei);
+			const auto imei = gsl::as_bytes(Imei.GetTrimmedSpan());
+			writer.GetStream()->WriteBytes(imei);
 		}
 
-		gsl::span<const std::byte> Imei;
+		UsingStringView Imei;
 	};
 
 	template <>
@@ -362,7 +447,7 @@ namespace YumeBot::Tlv
 			writer.GetStream()->WriteBytes(osType);
 			writer.Write(static_cast<std::uint16_t>(osVer.size()));
 			writer.GetStream()->WriteBytes(osVer);
-			writer.Write(NetType);
+			writer.Write(static_cast<std::uint16_t>(NetType));
 			writer.Write(static_cast<std::uint16_t>(netDetail.size()));
 			writer.GetStream()->WriteBytes(netDetail);
 			writer.Write(static_cast<std::uint16_t>(addr.size()));
@@ -373,7 +458,7 @@ namespace YumeBot::Tlv
 
 		UsingStringView OsType;
 		UsingStringView OsVer;
-		std::uint16_t NetType;
+		ConnectionTypeEnum NetType;
 		UsingStringView NetDetail;
 		UsingStringView Addr;
 		UsingStringView Apn;
@@ -467,14 +552,14 @@ namespace YumeBot::Tlv
 			writer.Write(static_cast<std::uint16_t>(operatorNameSize));
 			writer.GetStream()->WriteBytes(operatorName);
 
-			writer.Write(NetworkType);
+			writer.Write(static_cast<std::uint16_t>(NetworkType));
 
 			writer.Write(static_cast<std::uint16_t>(apnSize));
 			writer.GetStream()->WriteBytes(apn);
 		}
 
 		UsingStringView OperatorName;
-		std::uint16_t NetworkType;
+		ConnectionTypeEnum NetworkType;
 		UsingStringView Apn;
 	};
 
@@ -553,7 +638,7 @@ namespace YumeBot::Tlv
 			writer.GetStream()->WriteBytes(Guid);
 		}
 
-		gsl::span<const std::byte> Guid;
+		gsl::span<const std::byte, 16> Guid;
 	};
 
 	template <>
@@ -565,22 +650,18 @@ namespace YumeBot::Tlv
 			const auto appVer =
 			    appVerTrimmedSpan.subspan(0, std::min(appVerTrimmedSpan.size(), std::ptrdiff_t{ 32 }));
 
-			const auto appSignTrimmedSpan = gsl::as_bytes(AppSign.GetTrimmedSpan());
-			const auto appSign =
-			    appSignTrimmedSpan.subspan(0, std::min(appSignTrimmedSpan.size(), std::ptrdiff_t{ 32 }));
-
 			writer.Write(AppVerId);
 
 			writer.Write(static_cast<std::uint16_t>(appVer.size()));
 			writer.GetStream()->WriteBytes(appVer);
 
-			writer.Write(static_cast<std::uint16_t>(appSign.size()));
-			writer.GetStream()->WriteBytes(appSign);
+			writer.Write(static_cast<std::uint16_t>(AppSign.size()));
+			writer.GetStream()->WriteBytes(AppSign);
 		}
 
 		std::uint32_t AppVerId;
 		UsingStringView AppVer;
-		UsingStringView AppSign;
+		gsl::span<const std::byte, 16> AppSign;
 	};
 
 	template <>
@@ -818,10 +899,11 @@ namespace YumeBot::Tlv
 	{
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
-			writer.GetStream()->WriteBytes(Mac);
+			const auto mac = gsl::as_bytes(Mac.GetTrimmedSpan());
+			writer.GetStream()->WriteBytes(mac);
 		}
 
-		gsl::span<const std::byte, 16> Mac;
+		UsingStringView Mac;
 	};
 
 	template <>
@@ -829,9 +911,23 @@ namespace YumeBot::Tlv
 	{
 		void Write(Cafe::Io::BinaryWriter& writer) const
 		{
-			writer.GetStream()->WriteBytes(AndroidID);
+			const auto androidID = gsl::as_bytes(AndroidID.GetTrimmedSpan());
+			writer.GetStream()->WriteBytes(androidID);
 		}
 
-		gsl::span<const std::byte, 16> AndroidID;
+		UsingStringView AndroidID;
+	};
+
+	template <>
+	struct TlvT<0x305>
+	{
+		static TlvT<0x305> Read(Cafe::Io::BinaryReader& reader, std::size_t bodySize)
+		{
+			TlvT<0x305> tlv{ { bodySize } };
+			reader.GetStream()->ReadBytes(gsl::make_span(tlv.SessionKey));
+			return tlv;
+		}
+
+		std::vector<std::byte> SessionKey;
 	};
 } // namespace YumeBot::Tlv

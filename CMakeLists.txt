@@ -15,8 +15,7 @@ conan_add_remote(NAME Cafe
 
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
-                BUILD missing
-                SETTINGS compiler.cppstd=20)
+                BUILD missing)
 
 add_subdirectory(YumeBot)
 

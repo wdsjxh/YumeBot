@@ -1,6 +1,7 @@
 set(SOURCE_FILES
     CryptographyTest.cpp
     JceTest.cpp
+    TlvTest.cpp
     YumeBot.Test.cpp)
 
 add_executable(YumeBot.Test ${SOURCE_FILES})

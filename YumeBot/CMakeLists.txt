@@ -1,6 +1,7 @@
 set(SOURCE_FILES
     Cryptography.cpp
     Jce.cpp
+    Session.cpp
     Tlv.cpp
     Wup.cpp)
 
@@ -9,6 +10,8 @@ set(HEADERS
     Jce.h
     JceStructDef.h
     Misc.h
+    Request.h
+    Session.h
     Tlv.h
     Utility.h
     Wup.h)
@@ -26,7 +29,7 @@ target_include_directories(YumeBot INTERFACE
     PRIVATE ${OPENSSL_INCLUDE_DIR})
 
 target_link_libraries(YumeBot
-    PUBLIC CONAN_PKG::Cafe CONAN_PKG::asio
+    PUBLIC CONAN_PKG::Cafe
     PRIVATE ${OPENSSL_LIBRARIES})
 
 install(TARGETS YumeBot

@@ -1,7 +1,6 @@
 [requires]
 Cafe/0.1@Chino/Cafe
-asio/1.13.0@bincrafters/stable
-Catch2/2.8.0@catchorg/stable
+Catch2/2.9.2@catchorg/stable
 
 [generators]
 cmake

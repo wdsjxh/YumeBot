@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cafe/ErrorHandling/ErrorHandling.h>
-#include <gsl/span>
+#include <Cafe/Io/Streams/StreamBase.h>
 
 #include "Utility.h"
 #include <charconv>
@@ -24,6 +24,17 @@ namespace YumeBot::Cryptography
 		std::size_t Encrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output,
 		                    gsl::span<const std::uint32_t, 4> const& key);
 		std::size_t Decrypt(gsl::span<const std::byte> const& input, gsl::span<std::byte> const& output,
+		                    gsl::span<const std::uint32_t, 4> const& key);
+
+		///	@see    https://baike.baidu.com/item/TEA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95
+		/// @return 应当写入的字节数，用户应检查是否成功写入指定数量的字节到 outputStream 内
+		///         若 outputStream 在写入开始前具有不少于 Tea::CalculateOutputSize(key.size())
+		///         的可用空间，则保证写入一定成功
+		std::size_t Encrypt(gsl::span<const std::byte> const& input,
+		                    Cafe::Io::OutputStream* outputStream,
+		                    gsl::span<const std::uint32_t, 4> const& key);
+		std::size_t Decrypt(gsl::span<const std::byte> const& input,
+		                    Cafe::Io::OutputStream* outputStream,
 		                    gsl::span<const std::uint32_t, 4> const& key);
 	} // namespace Tea
 
@@ -56,4 +67,10 @@ namespace YumeBot::Cryptography
 			                   Cafe::Encoding::StringView<Cafe::Encoding::CodePage::Utf8>{ result });
 		}
 	} // namespace Md5
+
+	namespace Ecdh
+	{
+		void GenerateKeyPair(gsl::span<std::byte, 25> const& pubKey,
+		                     gsl::span<std::byte, 16> const& shareKey);
+	} // namespace Ecdh
 } // namespace YumeBot::Cryptography
