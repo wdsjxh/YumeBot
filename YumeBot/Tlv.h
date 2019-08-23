@@ -29,7 +29,7 @@ namespace YumeBot::Tlv
 	{
 	};
 
-	template <>
+	template <std::uint16_t Cmd>
 	struct IsWritableTlvTrait<
 	    Cmd, std::void_t<decltype(TlvT<Cmd>::Write(std::declval<Cafe::Io::BinaryWriter&>()))>>
 	    : std::true_type
@@ -101,8 +101,8 @@ namespace YumeBot::Tlv
 
 			while (stream->GetAvailableBytes() > 4)
 			{
-				const auto cmd = m_Reader.Read<std::uint16_t>();
-				const auto bodySize = m_Reader.Read<std::uint16_t>();
+				const auto cmd = *m_Reader.Read<std::uint16_t>();
+				const auto bodySize = *m_Reader.Read<std::uint16_t>();
 				if (cmd == Cmd)
 				{
 					return TlvT<Cmd>::Read(m_Reader, bodySize);
@@ -352,7 +352,7 @@ namespace YumeBot::Tlv
 
 		static TlvT<0x108> Read(Cafe::Io::BinaryReader& reader, std::size_t bodySize)
 		{
-			TlvT<0x108> tlv{ { bodySize } };
+			TlvT<0x108> tlv{ std::vector<std::byte>(bodySize) };
 			reader.GetStream()->ReadBytes(gsl::make_span(tlv.Ksid));
 			return tlv;
 		}
@@ -923,7 +923,7 @@ namespace YumeBot::Tlv
 	{
 		static TlvT<0x305> Read(Cafe::Io::BinaryReader& reader, std::size_t bodySize)
 		{
-			TlvT<0x305> tlv{ { bodySize } };
+			TlvT<0x305> tlv{ std::vector<std::byte>(bodySize) };
 			reader.GetStream()->ReadBytes(gsl::make_span(tlv.SessionKey));
 			return tlv;
 		}

@@ -1,6 +1,7 @@
 [requires]
 Cafe/0.1@Chino/Cafe
 Catch2/2.9.2@catchorg/stable
+OpenSSL/1.1.1d@conan/stable
 
 [generators]
 cmake

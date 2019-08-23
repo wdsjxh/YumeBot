@@ -18,19 +18,16 @@ set(HEADERS
 
 add_library(YumeBot ${SOURCE_FILES} ${HEADERS})
 
-find_package(OpenSSL REQUIRED)
-
 target_compile_features(YumeBot PUBLIC
     cxx_std_20)
 
 target_include_directories(YumeBot INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:.>
-    PRIVATE ${OPENSSL_INCLUDE_DIR})
+    $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(YumeBot
     PUBLIC CONAN_PKG::Cafe
-    PRIVATE ${OPENSSL_LIBRARIES})
+    PRIVATE CONAN_PKG::OpenSSL)
 
 install(TARGETS YumeBot
     EXPORT YumeBot)

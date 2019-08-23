@@ -29,7 +29,7 @@ namespace YumeBot::Request
 			Cryptography::Ecdh::GenerateKeyPair(gsl::make_span(PubKey), gsl::make_span(ShareKey));
 
 			std::random_device rd;
-			std::default_random_engine engine{ rd };
+			std::default_random_engine engine{ rd() };
 			std::uniform_int_distribution<> dist{ 0, std::numeric_limits<std::uint8_t>::max() };
 			std::generate(std::begin(RandomKey), std::end(RandomKey),
 			              [&] { return static_cast<std::byte>(dist(engine)); });
@@ -58,6 +58,8 @@ namespace YumeBot::Request
 		UsingString ApkVersion = DefaultApkVersion;
 		gsl::span<const std::byte> ApkSignature = gsl::as_bytes(gsl::make_span(Signature));
 
+		SsoVersion UsingSsoVersion = SsoVersion::Version8;
+
 		std::array<std::byte, 16> const& GetGuid() const
 		{
 			if (m_Guid.has_value())
@@ -69,7 +71,7 @@ namespace YumeBot::Request
 			std::array<std::byte, 16> result;
 			Cryptography::Md5::Calculate(gsl::as_bytes(tmp.GetView().GetTrimmedSpan()),
 			                             gsl::make_span(result));
-			return result;
+			return m_Guid.emplace(result);
 		}
 
 		std::size_t AcquireRequestSeq() const noexcept
@@ -83,7 +85,7 @@ namespace YumeBot::Request
 		}
 
 	private:
-		std::optional<std::array<std::byte, 16>> m_Guid;
+		mutable std::optional<std::array<std::byte, 16>> m_Guid;
 		mutable std::size_t m_RequestSeq{};
 		mutable std::size_t m_ClientSeq{};
 	};
@@ -133,9 +135,8 @@ namespace YumeBot::Request
 		/// @return Seq
 		template <typename T, std::uint16_t CmdValue, std::uint16_t SubCmdValue,
 		          EncryptType EncryptTypeValue>
-		std::size_t
-		WriteRequest(Cafe::Io::OutputStream* stream,
-		             RequestBase<T, CmdValue, SubCmdValue, EncryptTypeValue> const& request) const
+		std::size_t WriteRequest(Cafe::Io::OutputStream* stream,
+		                         RequestBase<T, CmdValue, SubCmdValue, EncryptTypeValue> const& request)
 		{
 			const auto seq = m_Context.AcquireRequestSeq();
 
@@ -226,11 +227,34 @@ namespace YumeBot::Request
 
 		void EncodeRequest(Cafe::Io::OutputStream* stream, gsl::span<const std::byte> const& request)
 		{
-			// TODO
+			if (m_Context.UsingSsoVersion == SsoVersion::Version8)
+			{
+				EncodeRequestV8(stream, request);
+			}
+			else
+			{
+				assert(m_Context.UsingSsoVersion == SsoVersion::Version9);
+				EncodeRequestV9(stream, request);
+			}
 		}
 
 	private:
 		RequestContext m_Context;
+
+		void EncodeRequestV8(Cafe::Io::OutputStream* stream, gsl::span<const std::byte> const& request)
+		{
+			constexpr std::uint32_t ssoVersion = static_cast<std::uint32_t>(SsoVersion::Version8);
+
+			Cafe::Io::BinaryWriter writer{ stream, std::endian::big };
+			writer.Write(ssoVersion);
+			writer.Write(std::uint8_t{}); // unknown byte
+			
+		}
+
+		void EncodeRequestV9(Cafe::Io::OutputStream* stream, gsl::span<const std::byte> const& request)
+		{
+			// TODO
+		}
 	};
 
 	struct RequestTGTGT : RequestBase<RequestTGTGT, 2064, 9, EncryptType::Ecdh>
@@ -245,7 +269,7 @@ namespace YumeBot::Request
 			tlvBuilder.WriteTlv(Tlv::TlvT<0x107>{ PicType, CapType, PicSize, RetType });
 			tlvBuilder.WriteTlv(Tlv::TlvT<0x116>{ Bitmap, GetSig, SubAppIdList });
 			tlvBuilder.WriteTlv(Tlv::TlvT<0x145>{ guid });
-			tlvBuilder.WriteTlv(Tlv::TlvT<0x154>{ seq });
+			tlvBuilder.WriteTlv(Tlv::TlvT<0x154>{ static_cast<std::uint32_t>(seq) });
 			tlvBuilder.WriteTlv(
 			    Tlv::TlvT<0x141>{ context.SimOperatorName, context.ConnectionType, context.Apn });
 			tlvBuilder.WriteTlv(Tlv::TlvT<0x8>{ 0, context.CurrentLocaleId, 0 });

@@ -1,8 +1,12 @@
 #pragma once
 #include <Cafe/Encoding/CodePage/UTF-8.h>
+#include <ctime>
 
 namespace YumeBot
 {
+	using UsingString = Cafe::Encoding::String<Cafe::Encoding::CodePage::Utf8>;
+	using UsingStringView = Cafe::Encoding::StringView<Cafe::Encoding::CodePage::Utf8>;
+
 	constexpr std::uint32_t DefaultAppId = 537039093;
 	/// @remark 使用短信登录时为 3
 	constexpr std::uint32_t DefualtSigSrc = 1;
@@ -18,8 +22,15 @@ namespace YumeBot
 
 		constexpr bool IsUnspecified() const noexcept
 		{
-			return std::all_of(std::begin(Content), std::end(Content),
-			                   [](std::uint8_t value) { return value == 0; });
+			for (auto item : Content)
+			{
+				if (item)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	};
 
@@ -63,10 +74,13 @@ namespace YumeBot
 
 	constexpr auto SdkVersion = CAFE_UTF8_SV("5.2.2.98");
 
+	enum class SsoVersion
+	{
+		Version8 = 8,
+		Version9 = 9
+	};
+
 	static_assert(
 	    std::numeric_limits<float>::is_iec559 && std::numeric_limits<double>::is_iec559,
 	    "Jce assumed float and double fulfill the requirements of IEEE 754(IEC 559) standard.");
-
-	using UsingString = Cafe::Encoding::String<Cafe::Encoding::CodePage::Utf8>;
-	using UsingStringView = Cafe::Encoding::StringView<Cafe::Encoding::CodePage::Utf8>;
 } // namespace YumeBot
